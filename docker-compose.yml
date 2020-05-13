@@ -7,7 +7,6 @@ services:
         - 80:80
         - 443:443
         links:
-        - macula-cloud-redis
         - macula-cloud-gateway
         volumes:
         - ${NGINX_HOME}/conf:/etc/nginx/conf.d
@@ -37,12 +36,11 @@ services:
         command:
             redis-server --appendonly yes
 
-    macula-cloud-eurkea:
+    macula-cloud-eureka:
         image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-eureka:latest
         links:
             - macula-cloud-redis
             - macula-cloud-mysql
-            - macula-cloud-eureka
         environment:
             SERVER_PORT: 8000
 
@@ -51,7 +49,7 @@ services:
         links:
             - macula-cloud-eureka
         environment:
-            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: 	http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
             SERVER_PORT: 8888
 
     macula-cloud-oauth2:
@@ -61,7 +59,7 @@ services:
             - macula-cloud-mysql
             - macula-cloud-eureka
         environment:
-            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: 	http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
             SPRING_DATASOURCE_URL: jdbc:mysql://macula-cloud-mysql:3306/macula-cloud?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=CTT
             SPRING_DATASOURCE_USERNAME: root
             SPRING_DATASOURCE_PASSWORD: macula-cloud1
@@ -74,7 +72,7 @@ services:
             - macula-cloud-mysql
             - macula-cloud-eureka
         environment:
-            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: 	http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
             SPRING_DATASOURCE_URL: jdbc:mysql://macula-cloud-mysql:3306/macula-cloud?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=CTT
             SPRING_DATASOURCE_USERNAME: root
             SPRING_DATASOURCE_PASSWORD: macula-cloud1
@@ -87,7 +85,7 @@ services:
             - macula-cloud-mysql
             - macula-cloud-eureka
         environment:
-            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: 	http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
             SPRING_DATASOURCE_URL: jdbc:mysql://macula-cloud-mysql:3306/macula-cloud?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=CTT
             SPRING_DATASOURCE_USERNAME: root
             SPRING_DATASOURCE_PASSWORD: macula-cloud1
