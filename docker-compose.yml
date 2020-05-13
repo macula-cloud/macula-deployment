@@ -1,0 +1,97 @@
+version: "3"
+services:
+
+    macula-cloud-nginx:
+        image: nginx:latest
+        ports:
+        - 80:80
+        - 443:443
+        links:
+        - macula-cloud-redis
+        - macula-cloud-gateway
+        volumes:
+        - ${NGINX_HOME}/conf:/etc/nginx/conf.d
+        - ${NGINX_HOME}/logs:/var/log/nginx
+        - ${NGINX_HOME}/html:/usr/share/nginx/html
+        - ${NGINX_HOME}/cert:/etc/nginx/cert:ro
+
+    macula-cloud-mysql:
+        image: mysql:5.7
+        ports:
+        - 3306:3306
+        environment:
+          MYSQL_ROOT_PASSWORD: macula-cloud1
+          MYSQL_USER: macula-cloud
+          MYSQL_PASS: macula-cloud1
+        volumes:
+        - ${MYSQL_HOME}/data:/var/lib/mysql
+        - ${MYSQL_HOME}/conf/my.cnf:/etc/my.cnf
+
+    macula-cloud-redis:
+        image: redis:latest
+        expose:
+        - 6379
+        volumes:
+        - ${REDIS_HOME}/conf:/usr/local/etc/redis
+        - ${REDIS_HOME}/data:/data
+        command:
+            redis-server --appendonly yes
+
+    macula-cloud-eurkea:
+        image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-eureka:latest
+        links:
+            - macula-cloud-redis
+            - macula-cloud-mysql
+            - macula-cloud-eureka
+        environment:
+            SERVER_PORT: 8000
+
+    macula-cloud-config:
+        image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-eureka:latest
+        links:
+            - macula-cloud-eureka
+        environment:
+            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: 	http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            SERVER_PORT: 8888
+
+    macula-cloud-oauth2:
+        image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-oauth2:latest
+        links:
+            - macula-cloud-redis
+            - macula-cloud-mysql
+            - macula-cloud-eureka
+        environment:
+            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: 	http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            SPRING_DATASOURCE_URL: jdbc:mysql://macula-cloud-mysql:3306/macula-cloud?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=CTT
+            SPRING_DATASOURCE_USERNAME: root
+            SPRING_DATASOURCE_PASSWORD: macula-cloud1
+            SERVER_PORT: 7080
+
+    macula-cloud-admin:
+        image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-admin:latest
+        links:
+            - macula-cloud-redis
+            - macula-cloud-mysql
+            - macula-cloud-eureka
+        environment:
+            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: 	http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            SPRING_DATASOURCE_URL: jdbc:mysql://macula-cloud-mysql:3306/macula-cloud?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=CTT
+            SPRING_DATASOURCE_USERNAME: root
+            SPRING_DATASOURCE_PASSWORD: macula-cloud1
+            SERVER_PORT: 7081
+
+    macula-cloud-gateway:
+        image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-gateway:latest
+        links:
+            - macula-cloud-redis
+            - macula-cloud-mysql
+            - macula-cloud-eureka
+        environment:
+            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: 	http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            SPRING_DATASOURCE_URL: jdbc:mysql://macula-cloud-mysql:3306/macula-cloud?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=CTT
+            SPRING_DATASOURCE_USERNAME: root
+            SPRING_DATASOURCE_PASSWORD: macula-cloud1
+            SERVER_PORT: 8080
+            OAUTH_URL: http://macula-cloud-oauth2:8010
+
+
