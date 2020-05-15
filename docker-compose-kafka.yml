@@ -1,0 +1,27 @@
+version: "3"
+
+networks:
+    default:
+        external:
+            name: macula-cloud-network
+
+services:
+
+    # zookeeper
+    macula-cloud-zookeeper:
+        image: wurstmeister/zookeeper
+        restart: always
+
+    # kafka
+    macula-cloud-kafka:
+        image: wurstmeister/kafka
+        restart: always
+        links:
+            - macula-cloud-zookeeper
+        environment:
+            KAFKA_ADVERTISED_HOST_NAME: macula-cloud-kafka
+            KAFKA_ZOOKEEPER_CONNECT: macula-cloud-zookeeper:2181
+            KAFKA_BROKER_ID: 1
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        volumes:
+        - ${KAFKA_HOME}/data:/kafka
