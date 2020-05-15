@@ -71,6 +71,9 @@ services:
             - macula-cloud-eureka
         environment:
             EUREKA_SERVER: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            GIT_URL: ${CONFIG_GIT_URL}
+            GIT_USERNAME: ${CONFIG_GIT_USER}
+            GIT_PASSWORD: ${CONFIG_GIT_PASSWORD}
             SPRING_KAFKA_BOOTSTRAPSERVERS: macula-cloud-kafka:9092
             SERVER_PORT: 8888
 
