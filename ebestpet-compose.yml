@@ -1,0 +1,44 @@
+version: "3"
+
+networks:
+    default:
+        external:
+            name: macula-cloud-network
+
+services:
+    
+    # homepet-service
+    homepet-service:
+        image: ${HOMEPET_SERVICE_IMAGE}
+        links:
+        - macula-cloud-redis
+        - macula-cloud-mysql
+        - macula-cloud-kafka
+        - macula-cloud-eureka
+        environment:
+            EUREKA_SERVER: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            EUREKA_SERVER: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            SPRING_REDIS_HOSTS: macula-cloud-redis:6379
+            SPRING_REDIS_HOST: macula-cloud-redis
+            SPRING_REDIS_PASSWORD: ${REDIS_PWD}
+            SPRING_REDIS_DATABASE: 1
+            SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKDERS: macula-cloud-kafka:9092
+            SPRING_DATASOURCE_URL: ${DB_URL}
+            SPRING_DATASOURCE_USERNAME: ${DB_USER}
+            SPRING_DATASOURCE_PASSWORD: ${DB_PWD}
+            SPRING_JPA_HIBERNATE_DDLAUTO: update
+            SERVER_PORT: 8080
+
+    # nginx
+    ebestpet-nginx:
+        image: nginx:latest
+        ports:
+        - 80:80
+        - 443:443
+        links:
+        - macula-cloud-gateway
+        volumes:
+        - ${NGINX_HOME}/conf:/etc/nginx/conf.d
+        - ${NGINX_HOME}/logs:/var/log/nginx
+        - ${NGINX_HOME}/html:/usr/share/nginx/html
+        - ${NGINX_HOME}/cert:/etc/nginx/cert:ro

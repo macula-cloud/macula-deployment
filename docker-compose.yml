@@ -1,95 +1,121 @@
 version: "3"
+
+networks:
+    default:
+        external:
+            name: macula-cloud-network
+
 services:
 
-    macula-cloud-nginx:
-        image: nginx:latest
-        ports:
-        - 80:80
-        - 443:443
-        links:
-        - macula-cloud-gateway
-        volumes:
-        - ${NGINX_HOME}/conf:/etc/nginx/conf.d
-        - ${NGINX_HOME}/logs:/var/log/nginx
-        - ${NGINX_HOME}/html:/usr/share/nginx/html
-        - ${NGINX_HOME}/cert:/etc/nginx/cert:ro
-
+    # mysql
     macula-cloud-mysql:
         image: mysql:5.7
         ports:
         - 3306:3306
         environment:
-          MYSQL_ROOT_PASSWORD: macula-cloud1
-          MYSQL_USER: macula-cloud
-          MYSQL_PASS: macula-cloud1
+          MYSQL_DATABASE: macula-cloud
+          MYSQL_ROOT_PASSWORD: ${DB_PWD}
+          MYSQL_USER: ${DB_USER}
+          MYSQL_PASS: ${DB_PWD}
         volumes:
         - ${MYSQL_HOME}/data:/var/lib/mysql
         - ${MYSQL_HOME}/conf/my.cnf:/etc/my.cnf
 
+    # redis
     macula-cloud-redis:
         image: redis:latest
-        expose:
-        - 6379
+        ports:
+        - 6379:6379
         volumes:
         - ${REDIS_HOME}/conf:/usr/local/etc/redis
         - ${REDIS_HOME}/data:/data
-        command:
-            redis-server --appendonly yes
+        command: redis-server --requirepass ${REDIS_PWD} --appendonly yes
 
+    # zookeeper
+    macula-cloud-zookeeper:
+        image: wurstmeister/zookeeper
+        restart: always
+
+    # kafka
+    macula-cloud-kafka:
+        image: wurstmeister/kafka
+        restart: always
+        links:
+            - macula-cloud-zookeeper
+        environment:
+            KAFKA_ADVERTISED_HOST_NAME: macula-cloud-kafka
+            KAFKA_ZOOKEEPER_CONNECT: macula-cloud-zookeeper:2181
+            KAFKA_BROKER_ID: 1
+            KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+        volumes:
+        - ${KAFKA_HOME}/data:/kafka
+
+    # registry
     macula-cloud-eureka:
         image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-eureka:latest
+        restart: always
         links:
             - macula-cloud-redis
             - macula-cloud-mysql
         environment:
             SERVER_PORT: 8000
+            EUREKA_SERVER: http://macula:macula2019@localhost:8000/eureka/
+            EUREKA_FETCH_REGISTRY: "false"
 
+    # config
     macula-cloud-config:
-        image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-eureka:latest
+        image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-config:latest
+        restart: always
         links:
+            - macula-cloud-kafka
             - macula-cloud-eureka
         environment:
-            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            EUREKA_SERVER: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            SPRING_KAFKA_BOOTSTRAPSERVERS: macula-cloud-kafka:9092
             SERVER_PORT: 8888
 
+    # oauth2
     macula-cloud-oauth2:
         image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-oauth2:latest
+        restart: always
         links:
             - macula-cloud-redis
             - macula-cloud-mysql
+            - macula-cloud-kafka
             - macula-cloud-eureka
         environment:
-            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
-            SPRING_DATASOURCE_URL: jdbc:mysql://macula-cloud-mysql:3306/macula-cloud?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=CTT
-            SPRING_DATASOURCE_USERNAME: root
-            SPRING_DATASOURCE_PASSWORD: macula-cloud1
+            EUREKA_SERVER: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            SPRING_REDIS_HOSTS: macula-cloud-redis:6379
+            SPRING_REDIS_HOST: macula-cloud-redis
+            SPRING_REDIS_PASSWORD: ${REDIS_PWD}
+            SPRING_REDIS_DATABASE: 1
+            SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKDERS: macula-cloud-kafka:9092
+            SPRING_DATASOURCE_URL: ${DB_URL}
+            SPRING_DATASOURCE_USERNAME: ${DB_USER}
+            SPRING_DATASOURCE_PASSWORD: ${DB_PWD}
+            SPRING_JPA_HIBERNATE_DDLAUTO: update
             SERVER_PORT: 7080
-
-    macula-cloud-admin:
-        image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-admin:latest
-        links:
-            - macula-cloud-redis
-            - macula-cloud-mysql
-            - macula-cloud-eureka
-        environment:
-            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
-            SPRING_DATASOURCE_URL: jdbc:mysql://macula-cloud-mysql:3306/macula-cloud?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=CTT
-            SPRING_DATASOURCE_USERNAME: root
-            SPRING_DATASOURCE_PASSWORD: macula-cloud1
-            SERVER_PORT: 7081
-
+                       
+    # gateway
     macula-cloud-gateway:
         image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-gateway:latest
+        restart: always
         links:
             - macula-cloud-redis
             - macula-cloud-mysql
+            - macula-cloud-kafka
             - macula-cloud-eureka
+            - macula-cloud-oauth2
         environment:
-            EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
-            SPRING_DATASOURCE_URL: jdbc:mysql://macula-cloud-mysql:3306/macula-cloud?useUnicode=true&characterEncoding=utf-8&useSSL=false&useInformationSchema=true&remarks=true&serverTimezone=CTT
-            SPRING_DATASOURCE_USERNAME: root
-            SPRING_DATASOURCE_PASSWORD: macula-cloud1
+            EUREKA_SERVER: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+            SPRING_REDIS_HOSTS: macula-cloud-redis:6379
+            SPRING_REDIS_HOST: macula-cloud-redis
+            SPRING_REDIS_PASSWORD: ${REDIS_PWD}
+            SPRING_REDIS_DATABASE: 1
+            SPRING_CLOUD_STREAM_KAFKA_BINDER_BROKDERS: macula-cloud-kafka:9092
+            SPRING_DATASOURCE_URL: ${DB_URL}
+            SPRING_DATASOURCE_USERNAME: ${DB_USER}
+            SPRING_DATASOURCE_PASSWORD: ${DB_PWD}
+            SPRING_JPA_HIBERNATE_DDLAUTO: update
             SERVER_PORT: 8080
             OAUTH_URL: http://macula-cloud-oauth2:8010
-
-

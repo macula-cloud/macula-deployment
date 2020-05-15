@@ -1,0 +1,189 @@
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="Keywords" content="成长之路">
+  <meta name="Description" content="成长之路">
+  <title>成长之路</title>
+ </head>
+ <body>
+ 		<center>成长之路</center>
+<div class="container news__read--container " data-id="1210000017980207">
+    <div class="news__read">
+        <h1 class="h3 news__read-title mt5">kafka的Docker镜像使用说明(wurstmeister/kafka)</h1>
+        <div class="news__read-content fmt">
+            <div>
+<p>在hub.docker.com网站上，Star最多的<a href="https://www.roncoo.com/view/133" target="_blank">kafka</a>镜像是wurstmeister/kafka，今天一起来实践这个镜像，使用此镜像搭建kafka环境，并且生产和消费消息；</p>
+<p>实战环境</p>
+<p>操作系统：CentOS7<br>Docker：17.03.2-ce<br>docker-compose：1.23.2<br>编写docker-compose.yml</p>
+<p>wurstmeister在github开源了一份docker-compose.yml，在使用中遇到以下两个问题：</p>
+<p>kafka的配置使用了参数"build: ."，因此启动时会在本地构建镜像，构建过程中有的网站访问超时，导致镜像构建失败；<br>docker-compose.yml中环境变量的配置，在消费消息时会出现异常"LEADER_NOT_AVAILABLE"；<br>针对上述问题，我对原有的docker-compose.yml做了修改和调整，本次实战用到的docker-compose.yml内容如下：</p>
+<div>
+<div class="widget-codetool" style="display:none;">
+      <div class="widget-codetool--inner">
+      <span class="selectCode code-tool" data-toggle="tooltip" data-placement="top" title="" data-original-title="全选"></span>
+      <span type="button" class="copyCode code-tool" data-toggle="tooltip" data-placement="top" data-clipboard-text="" title="" data-original-title="复制"></span>
+      </div>
+      </div><pre class="hljs groovy"><span class="hljs-string">version:</span> <span class="hljs-string">'2'</span><span>
+<span class="hljs-string">services:</span>
+<span class="hljs-symbol">  zookeeper:</span>
+<span class="hljs-symbol">    image:</span> wurstmeister</span>/<span>zookeeper
+<span class="hljs-symbol">    ports:</span>
+      </span>- <span class="hljs-string">"2181:2181"</span><span>
+<span class="hljs-symbol">  kafka:</span>
+<span class="hljs-symbol">    image:</span> wurstmeister</span>/<span class="hljs-string">kafka:</span><span class="hljs-number">2.11</span><span class="hljs-number">-0.11</span><span class="hljs-number">.0</span><span class="hljs-number">.3</span><span>
+<span class="hljs-symbol">    ports:</span>
+      </span>- <span class="hljs-string">"9092"</span><span>
+<span class="hljs-symbol">    environment:</span>
+<span class="hljs-symbol">      KAFKA_ADVERTISED_LISTENERS:</span> <span class="hljs-string">PLAINTEXT:</span></span><span><span class="hljs-comment">//</span></span><span><span class="hljs-comment">:9092</span></span>
+<span class="hljs-symbol">      KAFKA_LISTENERS:</span> <span class="hljs-string">PLAINTEXT:</span><span><span class="hljs-comment">//</span></span><span><span class="hljs-comment">:9092</span></span>
+<span class="hljs-symbol">      KAFKA_ZOOKEEPER_CONNECT:</span> <span class="hljs-string">zookeeper:</span><span class="hljs-number">2181</span><span>
+<span class="hljs-symbol">    volumes:</span>
+      </span>- <span class="hljs-regexp">/var/</span>run<span class="hljs-regexp">/docker.sock:/</span>var<span class="hljs-regexp">/run/</span>docker.sock</pre>
+</div>
+<h3>启动server</h3>
+<ol>
+<li>在docker-compose.yml所在的文件夹下，执行命令<span>docker-compose up -d</span>，会先下载zookeeper和kafka的镜像，然后创建容器；</li>
+<li>执行命令<span>docker ps</span>，可见启动了一个zookeeper和一个kafka容器：</li>
+</ol>
+<div>
+<div class="widget-codetool" style="display:none;">
+      <div class="widget-codetool--inner">
+      <span class="selectCode code-tool" data-toggle="tooltip" data-placement="top" title="" data-original-title="全选"></span>
+      <span type="button" class="copyCode code-tool" data-toggle="tooltip" data-placement="top" data-clipboard-text="" title="" data-original-title="复制"></span>
+      </div>
+      </div><pre class="hljs sql">[root@hedy kafka-<span>docker]<span class="hljs-comment"># docker ps</span>
+CONTAINER ID        IMAGE                              COMMAND                  CREATED             STATUS              PORTS                                                NAMES
+ac99c60be2e3        wurstmeister</span>/kafka:2.11-0.11.0.3   "<span class="hljs-keyword">start</span>-kafka.sh<span class="hljs-string">"         5 seconds ago       Up 3 seconds        0.0.0.0:32773-&gt;9092/tcp                              kafka-</span><span><span class="hljs-string">docker_kafka_1
+0a26b6c4119e        wurstmeister</span></span><span class="hljs-string">/zookeeper             "</span>/<span class="hljs-keyword">bin</span>/sh -c <span class="hljs-string">'/usr/..."   5 seconds ago       Up 3 seconds        22/tcp, 2888/tcp, 3888/tcp, 0.0.0.0:2181-&gt;2181/tcp   kafka-docker_zookeeper_1</span></pre>
+</div>
+<p>3、由上面的命令可知kafka容器名称是kafka-docker_kafka_1，zookeeper容器名称是kafka-docker_zookeeper_1；</p>
+<p>&nbsp;</p>
+<p><strong>查看版本号</strong></p>
+<p>1、执行以下命令查看容器中的kafka版本号：</p>
+<div>
+<div class="widget-codetool" style="display:none;">
+      <div class="widget-codetool--inner">
+      <span class="selectCode code-tool" data-toggle="tooltip" data-placement="top" title="" data-original-title="全选"></span>
+      <span type="button" class="copyCode code-tool" data-toggle="tooltip" data-placement="top" data-clipboard-text="" title="" data-original-title="复制"></span>
+      </div>
+      </div><pre class="hljs perl">docker <span class="hljs-keyword">exec</span> kafka-docker_kafka_1 find / -name \*kafka<span class="hljs-number">_</span>\* | head -<span class="hljs-number">1</span> | <span class="hljs-keyword">grep</span> -o <span class="hljs-string">'\kafka[^\n]*'</span></pre>
+</div>
+<p>上述命令执行后，我这边控制台显示<span>kafka_2.11-0.11.0.3</span>，这表示Scala 的版本为2.11，kafka的版本是0.11.0.3；</p>
+<p>2. 执行以下命令查看zookeeper版本：</p>
+<div>
+<div class="widget-codetool" style="display:none;">
+      <div class="widget-codetool--inner">
+      <span class="selectCode code-tool" data-toggle="tooltip" data-placement="top" title="" data-original-title="全选"></span>
+      <span type="button" class="copyCode code-tool" data-toggle="tooltip" data-placement="top" data-clipboard-text="" title="" data-original-title="复制"></span>
+      </div>
+      </div><pre class="hljs bash">docker <span class="hljs-built_in">exec</span> kafka-docker_zookeeper_1 <span class="hljs-built_in">pwd</span></pre>
+</div>
+<p>上述命令执行后，我这边控制台显示<span>/opt/zookeeper-3.4.9</span>，这表示zookeeper的版本为3.4.9；</p>
+<h3>扩展broker</h3>
+<p>1、在docker-compose.yml所在的文件夹下，执行以下命令即可将borker总数从1个扩展到4个：</p>
+<div>
+<div class="widget-codetool" style="display:none;">
+      <div class="widget-codetool--inner">
+      <span class="selectCode code-tool" data-toggle="tooltip" data-placement="top" title="" data-original-title="全选"></span>
+      <span type="button" class="copyCode code-tool" data-toggle="tooltip" data-placement="top" data-clipboard-text="" title="" data-original-title="复制"></span>
+      </div>
+      </div><pre class="hljs fortran">docker-compose <span class="hljs-built_in">scale</span> kafka=<span class="hljs-number">4</span></pre>
+</div>
+<p>2、执行命令<span>docker ps</span>，可见kafka容器已经扩展到4个：</p>
+<div>
+<div class="widget-codetool" style="display:none;">
+      <div class="widget-codetool--inner">
+      <span class="selectCode code-tool" data-toggle="tooltip" data-placement="top" title="" data-original-title="全选"></span>
+      <span type="button" class="copyCode code-tool" data-toggle="tooltip" data-placement="top" data-clipboard-text="" title="" data-original-title="复制"></span>
+      </div>
+      </div><pre class="hljs haskell">[root@hedy kafka-<span>docker]# docker ps
+<span class="hljs-type">CONTAINER</span> <span class="hljs-type">ID</span>        <span class="hljs-type">IMAGE</span>                    <span class="hljs-type">COMMAND</span>                  <span class="hljs-type">CREATED</span>             <span class="hljs-type">STATUS</span>              <span class="hljs-type">PORTS</span>                                                <span class="hljs-type">NAMES</span>
+<span class="hljs-title">adf18015a95e</span>        kafka</span>-docker_kafka       <span class="hljs-string">"start-kafka.sh"</span>         <span class="hljs-number">6</span> seconds ago       <span class="hljs-type">Up</span> <span class="hljs-number">3</span> seconds        <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>:<span class="hljs-number">32771</span>-&gt;<span class="hljs-number">9092</span>/tcp                              kafka-<span>docker_kafka_2
+<span class="hljs-title">d7eb1a9c9c72</span>        kafka</span>-docker_kafka       <span class="hljs-string">"start-kafka.sh"</span>         <span class="hljs-number">6</span> seconds ago       <span class="hljs-type">Up</span> <span class="hljs-number">3</span> seconds        <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>:<span class="hljs-number">32770</span>-&gt;<span class="hljs-number">9092</span>/tcp                              kafka-<span>docker_kafka_4
+<span class="hljs-number">0</span>dddf1728ebd        kafka</span>-docker_kafka       <span class="hljs-string">"start-kafka.sh"</span>         <span class="hljs-number">6</span> seconds ago       <span class="hljs-type">Up</span> <span class="hljs-number">4</span> seconds        <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>:<span class="hljs-number">32769</span>-&gt;<span class="hljs-number">9092</span>/tcp                              kafka-<span>docker_kafka_3
+<span class="hljs-number">19</span>bc31339915        wurstmeister</span>/zookeeper   <span class="hljs-string">"/bin/sh -c '/usr/..."</span>   <span class="hljs-number">23</span> minutes ago      <span class="hljs-type">Up</span> <span class="hljs-number">23</span> minutes       <span class="hljs-number">22</span>/tcp, <span class="hljs-number">2888</span>/tcp, <span class="hljs-number">3888</span>/tcp, <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>:<span class="hljs-number">2181</span>-&gt;<span class="hljs-number">2181</span>/tcp   kafka-<span>docker_zookeeper_1
+<span class="hljs-number">11</span>bbf5c6ebec        kafka</span>-docker_kafka       <span class="hljs-string">"start-kafka.sh"</span>         <span class="hljs-number">23</span> minutes ago      <span class="hljs-type">Up</span> <span class="hljs-number">23</span> minutes       <span class="hljs-number">0.0</span><span class="hljs-number">.0</span><span class="hljs-number">.0</span>:<span class="hljs-number">32768</span>-&gt;<span class="hljs-number">9092</span>/tcp                              kafka-docker_kafka_1</pre>
+</div>
+<p>接下来实战消息的生产和消费；</p>
+<h3>创建topic</h3>
+<p>1、创建一个topic，名为topic001，4个partition，副本因子2，执行以下命令即可：</p>
+<div>
+<div class="widget-codetool" style="display:none;">
+      <div class="widget-codetool--inner">
+      <span class="selectCode code-tool" data-toggle="tooltip" data-placement="top" title="" data-original-title="全选"></span>
+      <span type="button" class="copyCode code-tool" data-toggle="tooltip" data-placement="top" data-clipboard-text="" title="" data-original-title="复制"></span>
+      </div>
+      </div><pre class="hljs properties"><span class="hljs-attr">docker</span> <span class="hljs-string">exec kafka-</span><span><span class="hljs-string">docker_kafka_1 \
+kafka</span></span><span class="hljs-string">-</span><span><span class="hljs-string">topics.sh \
+</span></span><span class="hljs-string">--create --</span><span><span class="hljs-string">topic topic001 \
+</span></span><span class="hljs-string">--partitions 4</span><span><span class="hljs-string"> \
+</span></span><span class="hljs-string">--zookeeper zookeeper:2181</span><span><span class="hljs-string"> \
+</span></span><span class="hljs-string">--replication-factor 2</span></pre>
+</div>
+<p>2、执行以下命令查看刚刚创建的topic，这次在容器kafka-docker_kafka_3上执行命令试试：</p>
+<div>
+<div class="widget-codetool" style="display:none;">
+      <div class="widget-codetool--inner">
+      <span class="selectCode code-tool" data-toggle="tooltip" data-placement="top" title="" data-original-title="全选"></span>
+      <span type="button" class="copyCode code-tool" data-toggle="tooltip" data-placement="top" data-clipboard-text="" title="" data-original-title="复制"></span>
+      </div>
+      </div><pre class="hljs sql">[root@hedy kafka-docker]<span class="hljs-comment"># docker exec kafka-</span><span><span class="hljs-comment">docker_kafka_3 \</span>
+kafka</span>-topics.sh <span class="hljs-comment">--</span><span><span class="hljs-comment">list \</span>
+</span><span class="hljs-comment">--zookeeper zookeeper:2181</span><span><span class="hljs-comment"> \</span>
+topic001</span></pre>
+</div>
+<p>可见刚刚创建的topic可以被查到；</p>
+<p><br>3. 查看刚刚创建的topic的情况，borker和副本情况一目了然，如下：</p>
+<div>
+<div class="widget-codetool" style="display:none;">
+      <div class="widget-codetool--inner">
+      <span class="selectCode code-tool" data-toggle="tooltip" data-placement="top" title="" data-original-title="全选"></span>
+      <span type="button" class="copyCode code-tool" data-toggle="tooltip" data-placement="top" data-clipboard-text="" title="" data-original-title="复制"></span>
+      </div>
+      </div><pre class="hljs properties"><span class="hljs-meta">[root@hedy</span> <span class="hljs-string">kafka-docker]# docker exec kafka-</span><span><span class="hljs-string">docker_kafka_3 \
+</span></span><span class="hljs-string">&gt; kafka-</span><span><span class="hljs-string">topics.sh \
+</span></span><span class="hljs-string">&gt; --</span><span><span class="hljs-string">describe \
+</span></span><span class="hljs-string">&gt; --</span><span><span class="hljs-string">topic topic001 \
+</span></span><span class="hljs-string">&gt; --zookeeper zookeeper:2181</span><span>
+<span class="hljs-attr">Topic</span>:<span class="hljs-string">topic001    PartitionCount:</span></span><span class="hljs-string">4    ReplicationFactor:2</span><span><span class="hljs-string">    Configs:</span>
+    <span class="hljs-attr">Topic</span>: <span class="hljs-string">topic001    Partition: </span></span><span class="hljs-string">0    Leader: 1002    Replicas: 1002,1003    Isr: 1002,1003</span><span>
+    <span class="hljs-attr">Topic</span>: <span class="hljs-string">topic001    Partition: </span></span><span class="hljs-string">1    Leader: 1003    Replicas: 1003,1004    Isr: 1003,1004</span><span>
+    <span class="hljs-attr">Topic</span>: <span class="hljs-string">topic001    Partition: </span></span><span class="hljs-string">2    Leader: 1004    Replicas: 1004,1001    Isr: 1004,1001</span><span>
+    <span class="hljs-attr">Topic</span>: <span class="hljs-string">topic001    Partition: </span></span><span class="hljs-string">3    Leader: 1001    Replicas: 1001,1002    Isr: 1001,1002</span></pre>
+</div>
+<h3>消费消息</h3>
+<p>执行如下命令，即可进入等待topic为<span>topic001</span>消息的状态：</p>
+<div>
+<div class="widget-codetool" style="display:none;">
+      <div class="widget-codetool--inner">
+      <span class="selectCode code-tool" data-toggle="tooltip" data-placement="top" title="" data-original-title="全选"></span>
+      <span type="button" class="copyCode code-tool" data-toggle="tooltip" data-placement="top" data-clipboard-text="" title="" data-original-title="复制"></span>
+      </div>
+      </div><pre class="hljs css"><span class="hljs-selector-tag">docker</span> <span class="hljs-selector-tag">exec</span> <span class="hljs-selector-tag">kafka-</span><span><span class="hljs-selector-tag">docker_kafka_2</span> \
+<span class="hljs-selector-tag">kafka</span></span><span class="hljs-selector-tag">-console-</span><span><span class="hljs-selector-tag">consumer</span><span class="hljs-selector-class">.sh</span> \
+</span><span class="hljs-selector-tag">--</span><span><span class="hljs-selector-tag">topic</span> <span class="hljs-selector-tag">topic001</span> \
+</span><span class="hljs-selector-tag">--bootstrap-server</span> <span class="hljs-selector-tag">kafka-docker_kafka_1</span><span class="hljs-selector-pseudo">:9092</span>,<span class="hljs-selector-tag">kafka-docker_kafka_2</span><span class="hljs-selector-pseudo">:9092</span>,<span class="hljs-selector-tag">kafka-docker_kafka_3</span><span class="hljs-selector-pseudo">:9092</span>,<span class="hljs-selector-tag">kafka-docker_kafka_4</span><span class="hljs-selector-pseudo">:9092</span></pre>
+</div>
+<p>目前还没有生产消息，因此控制台不会有内容输出，接下来尝试生产消息；</p>
+<h3>生产消息</h3>
+<p>1、打开一个新的窗口，执行如下命令，进入生产消息的命令行模式，<span>注意不要漏掉参数"-it"</span>，我之前就是因为漏掉了参数"-it"，导致生产的消息时虽然不提示异常，但是始终无法消费到消息：</p>
+<div>
+<div class="widget-codetool" style="display: none;">
+      <div class="widget-codetool--inner">
+      <span class="selectCode code-tool" data-toggle="tooltip" data-placement="top" title="" data-original-title="全选"></span>
+      <span type="button" class="copyCode code-tool" data-toggle="tooltip" data-placement="top" data-clipboard-text="" title="" data-original-title="复制"></span>
+      </div>
+      </div><pre class="hljs css"><span class="hljs-selector-tag">docker</span> <span class="hljs-selector-tag">exec</span> <span class="hljs-selector-tag">-it</span> <span class="hljs-selector-tag">kafka-</span><span><span class="hljs-selector-tag">docker_kafka_1</span> \
+<span class="hljs-selector-tag">kafka</span></span><span class="hljs-selector-tag">-console-</span><span><span class="hljs-selector-tag">producer</span><span class="hljs-selector-class">.sh</span> \
+</span><span class="hljs-selector-tag">--</span><span><span class="hljs-selector-tag">topic</span> <span class="hljs-selector-tag">topic001</span> \
+</span><span class="hljs-selector-tag">--broker-list</span> <span class="hljs-selector-tag">kafka-docker_kafka_1</span><span class="hljs-selector-pseudo">:9092</span>,<span class="hljs-selector-tag">kafka-docker_kafka_2</span><span class="hljs-selector-pseudo">:9092</span>,<span class="hljs-selector-tag">kafka-docker_kafka_3</span><span class="hljs-selector-pseudo">:9092</span>,<span class="hljs-selector-tag">kafka-docker_kafka_4</span><span class="hljs-selector-pseudo">:9092</span></pre>
+</div>
+<p>2、现在已经进入了生产消息的命令行模式，输入一些字符串然后回车，再去消费消息的控制台窗口看看，已经有消息打印出来，说明消息的生产和消费都成功了；</p>
+<p>&nbsp;</p>
+<p>至此，镜像wurstmeister/kafka的实战就完成了，在后续使用到kafka服务的时候，可以参考本次实战快速搭建kafka集群；</p>
+</div>
+  
+</div>
+        <center><a href="http://www.beian.miit.gov.cn" target="_blank">[粤ICP备19004883号]</a></center>
+ </body>
+</html>

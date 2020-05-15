@@ -5,4 +5,4 @@
 ```
 git clone https://pdsd-code.infinitus.com.cn/pdsp-macula-cloud/macula-cloud-deployment.git scmp
 cd scmp
-docker-compose up -d
+docker-compose up -d --build
