@@ -54,6 +54,8 @@ services:
         ports:
         - 8888:8888
         environment:
+            EUREKA_INSTANCE_PREFER-IP-ADDRESS: true
+            EUREKA_INSTANCE_IP-ADDRESS: ${EUREKA_INSTANCE_IP:106.12.92.108}
             EUREKA_SERVER: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
             GIT_URL: ${CONFIG_GIT_URL}
             GIT_USERNAME: ${CONFIG_GIT_USER}
