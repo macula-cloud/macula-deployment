@@ -85,13 +85,6 @@ services:
             SERVER_PORT: 7080
             MANAGER_SERVER_PORT: 9080
             SPRING_CLOUD_CONFIG_DISCOVERY_ENABLED: "false"
-   application:
-      name: macula-cloud-oauth2
-   cloud:
-      config:
-         discovery:
-            enabled: true
-
                        
     # gateway
     macula-cloud-gateway:
