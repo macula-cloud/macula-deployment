@@ -44,22 +44,23 @@ services:
             SERVER_PORT: 8000
             EUREKA_SERVER: http://macula:macula2019@localhost:8000/eureka/
             EUREKA_FETCH_REGISTRY: "false"
+            SPRING_CLOUD_CONFIG_DISCOVERY_ENABLED: "false"
 
     # config
-    macula-cloud-config:
-        image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-config:latest
-        restart: always
-        links:
-            - macula-cloud-eureka
-        ports:
-        - 8888:8888
-        environment:
-            EUREKA_INSTANCE_IP-ADDRESS: ${INSTANCE_IP}
-            EUREKA_SERVER: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
-            GIT_URL: ${CONFIG_GIT_URL}
-            GIT_USERNAME: ${CONFIG_GIT_USER}
-            GIT_PASSWORD: ${CONFIG_GIT_PASSWORD}
-            SERVER_PORT: 8888
+    # macula-cloud-config:
+    #     image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-config:latest
+    #     restart: always
+    #     links:
+    #         - macula-cloud-eureka
+    #     ports:
+    #     - 8888:8888
+    #     environment:
+    #         EUREKA_INSTANCE_IP-ADDRESS: ${INSTANCE_IP}
+    #         EUREKA_SERVER: http://macula:macula2019@macula-cloud-eureka:8000/eureka/
+    #         GIT_URL: ${CONFIG_GIT_URL}
+    #         GIT_USERNAME: ${CONFIG_GIT_USER}
+    #         GIT_PASSWORD: ${CONFIG_GIT_PASSWORD}
+    #         SERVER_PORT: 8888
 
     # oauth2
     macula-cloud-oauth2:
@@ -83,6 +84,13 @@ services:
             SPRING_JPA_HIBERNATE_DDLAUTO: update
             SERVER_PORT: 7080
             MANAGER_SERVER_PORT: 9080
+            SPRING_CLOUD_CONFIG_DISCOVERY_ENABLED: "false"
+   application:
+      name: macula-cloud-oauth2
+   cloud:
+      config:
+         discovery:
+            enabled: true
 
                        
     # gateway
@@ -109,3 +117,4 @@ services:
             SERVER_PORT: 8080
             MANAGER_SERVER_PORT: 9080
             OAUTH_URL: https://login.ebestpet.com
+            SPRING_CLOUD_CONFIG_DISCOVERY_ENABLED: "false"
