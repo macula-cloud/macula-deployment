@@ -33,7 +33,7 @@ services:
 
     # registry
     macula-cloud-eureka:
-        image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-eureka:latest
+        image: registry.cn-shanghai.aliyuncs.com/macula-cloud/macula-cloud-eureka:latest
         restart: always
         links:
             - macula-cloud-redis
@@ -48,7 +48,7 @@ services:
 
     # oauth2
     macula-cloud-oauth2:
-        image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-oauth2:latest
+        image: registry.cn-shanghai.aliyuncs.com/macula-cloud/macula-cloud-oauth2:latest
         restart: always
         links:
             - macula-cloud-redis
@@ -71,7 +71,7 @@ services:
                        
     # gateway
     macula-cloud-gateway:
-        image: registry.cn-hangzhou.aliyuncs.com/macula-cloud/macula-cloud-gateway:latest
+        image: registry.cn-shanghai.aliyuncs.com/macula-cloud/macula-cloud-gateway:latest
         restart: always
         links:
             - macula-cloud-redis
