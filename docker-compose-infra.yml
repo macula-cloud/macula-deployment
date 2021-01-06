@@ -1,0 +1,130 @@
+version: "3.9"
+
+networks:
+  default:
+    external:
+      name: macula-cloud-network
+
+services:
+  # redis
+  macula-cloud-redis:
+    image: redis:latest
+    container_name: macula-cloud-redis
+    restart: always
+    ports:
+      - 6379:6379
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ${REDIS_HOME}/conf:/usr/local/etc/redis
+      - ${REDIS_HOME}/data:/data
+    command: redis-server --appendonly yes
+
+  # mysql
+  macula-cloud-mysql:
+    image: mysql:5.7
+    container_name: macula-cloud-mysql
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - TZ=Asia/Shanghai
+      - MYSQL_DATABASE=macula-cloud
+      - MYSQL_ROOT_PASSWORD=${DB_PWD}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASS=${DB_PWD}
+    volumes:
+      - ${MYSQL_HOME}/data:/var/lib/mysql
+      - ${MYSQL_HOME}/conf/my.cnf:/etc/my.cnf
+      - ${MYSQL_HOME}/sql:/docker-entrypoint-initdb.d
+
+  # nacos registry
+  macula-cloud-nacos:
+    image: nacos/nacos-server
+    container_name: macula-cloud-nacos
+    restart: always
+    depends_on:
+      - macula-cloud-mysql
+    links:
+      - macula-cloud-mysql
+    ports:
+      - 8848:8848
+      - 9555:9555
+    environment:
+      - TZ=Asia/Shanghai
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - MYSQL_SERVICE_HOST=macula-cloud-mysql
+      - MYSQL_SERVICE_PORT=3306
+      - MYSQL_SERVICE_USER=${DB_USER}
+      - MYSQL_SERVICE_PASSWORD=${DB_PWD}
+      - MYSQL_SERVICE_DB_NAME=nacos_config
+      - JVM_XMS=256m
+      - JVM_XMX=512m
+
+  # sentinel dashboard
+  sentinel-dashboard:
+    image: v-sentinel-dashboard
+    container_name: sentinel-dashboard
+    restart: always
+    build:
+      context: ./sentinel-dashboard
+      dockerfile: Dockerfile
+    depends_on:
+      - macula-cloud-nacos
+    links:
+      - macula-cloud-nacos
+    ports:
+      - 9080:8080
+    environment:
+      - TZ=Asia/Shanghai
+      - NACOS_SERVER-ADDR=macula-cloud-nacos:8848
+      - JAVA_OPTS=-Xms256m -Xmx512m -Dserver.port=8080 -Dcsp.sentinel.dashboard.server=localhost:8080 -Dproject.name=sentinel-dashboard -Djava.security.egd=file:/dev/./urandom -Dcsp.sentinel.api.port=8719
+
+  # Rocket MQ
+  rocketmq-server:
+    image: foxiswho/rocketmq:4.7.0
+    container_name: rocketmq-server
+    ports:
+      - 9876:9876
+    volumes:
+      - ${ROCKETMQ_HOME}/data/logs:/opt/logs
+      - ${ROCKETMQ_HOME}/data/store:/opt/store
+    environment:
+      JAVA_OPT_EXT: "-Duser.home=/opt -Xms512M -Xmx512M -Xmn128m"
+    command: ["sh", "mqnamesrv"]
+
+  rocketmq-broker:
+    image: foxiswho/rocketmq:4.7.0
+    container_name: rocketmq-broker
+    ports:
+      - 10909:10909
+      - 10911:10911
+    volumes:
+      - ${ROCKETMQ_HOME}/data/logs:/opt/logs
+      - ${ROCKETMQ_HOME}/data/store:/opt/store
+      - ${ROCKETMQ_HOME}/conf/broker.conf:/etc/rocketmq/broker.conf
+    environment:
+      JAVA_OPT_EXT: "-Duser.home=/opt -Xms512M -Xmx512M -Xmn128m"
+    command:
+      [
+        "sh",
+        "mqbroker",
+        "-c",
+        "/etc/rocketmq/broker.conf",
+        "-n",
+        "rocketmq-server:9876",
+        "autoCreateTopicEnable=true",
+      ]
+    depends_on:
+      - rocketmq-server
+
+  rocketmq-console:
+    image: styletang/rocketmq-console-ng
+    container_name: rocketmq-console
+    ports:
+      - 9180:8080
+    environment:
+      JAVA_OPTS: "-Drocketmq.namesrv.addr=rocketmq-server:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+    depends_on:
+      - rocketmq-server
