@@ -63,9 +63,9 @@ services:
       - JVM_XMX=512m
 
   # sentinel dashboard
-  sentinel-dashboard:
+  macula-cloud-sentinel-dashboard:
     image: v-sentinel-dashboard
-    container_name: sentinel-dashboard
+    container_name: macula-cloud-sentinel-dashboard
     restart: always
     build:
       context: ./sentinel-dashboard
@@ -80,11 +80,11 @@ services:
       - TZ=Asia/Shanghai
       - NACOS_SERVER-ADDR=macula-cloud-nacos:8848
       - JAVA_OPTS=-Xms256m -Xmx512m -Dserver.port=8080 -Dcsp.sentinel.dashboard.server=localhost:8080 -Dproject.name=sentinel-dashboard -Djava.security.egd=file:/dev/./urandom -Dcsp.sentinel.api.port=8719
-
+  
   # Rocket MQ
-  rocketmq-server:
+  macula-cloud-rocketmq-server:
     image: foxiswho/rocketmq:4.7.0
-    container_name: rocketmq-server
+    container_name: macula-cloud-rocketmq-server
     restart: always
     ports:
       - 9876:9876
@@ -95,10 +95,12 @@ services:
       JAVA_OPT_EXT: "-Duser.home=/opt -Xms512M -Xmx512M -Xmn128m"
     command: ["sh", "mqnamesrv"]
 
-  rocketmq-broker:
+  macula-cloud-rocketmq-broker:
     image: foxiswho/rocketmq:4.7.0
-    container_name: rocketmq-broker
+    container_name: macula-cloud-rocketmq-broker
     restart: always
+    depends_on:
+      - macula-cloud-rocketmq-server
     ports:
       - 10909:10909
       - 10911:10911
@@ -115,19 +117,36 @@ services:
         "-c",
         "/etc/rocketmq/broker.conf",
         "-n",
-        "rocketmq-server:9876",
+        "macula-cloud-rocketmq-server:9876",
         "autoCreateTopicEnable=true",
       ]
-    depends_on:
-      - rocketmq-server
 
-  rocketmq-console:
+  macula-cloud-rocketmq-console:
     image: styletang/rocketmq-console-ng
-    container_name: rocketmq-console
+    container_name: macula-cloud-rocketmq-console
     restart: always
+    depends_on:
+      - macula-cloud-rocketmq-server
     ports:
       - 9180:8080
     environment:
-      JAVA_OPTS: "-Drocketmq.namesrv.addr=rocketmq-server:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+      JAVA_OPTS: "-Drocketmq.namesrv.addr=macula-cloud-rocketmq-server:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
+
+  # Seata 
+  macula-cloud-seata-server:
+    image: seataio/seata-server:latest
+    container_name: macula-cloud-seata-server
+    restart: always
     depends_on:
-      - rocketmq-server
+      - macula-cloud-nacos
+      - macula-cloud-mysql
+    links:
+      - macula-cloud-nacos
+      - macula-cloud-mysql
+    ports:
+      - 8091:8091
+    volumes:
+      - ${SEATA_HOME}/conf/file.conf:/seata-server/resources/file.conf
+      - ${SEATA_HOME}/conf/registry.conf:/seata-server/resources/registry.conf
+    environment:
+      - TZ=Asia/Shanghai
