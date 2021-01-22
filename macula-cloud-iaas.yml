@@ -78,9 +78,8 @@ services:
       - 9080:8080
     environment:
       - TZ=Asia/Shanghai
-      - NACOS_SERVER-ADDR=macula-cloud-nacos:8848
-      - JAVA_OPTS=-Xms256m -Xmx512m -Dserver.port=8080 -Dcsp.sentinel.dashboard.server=localhost:8080 -Dproject.name=sentinel-dashboard -Djava.security.egd=file:/dev/./urandom -Dcsp.sentinel.api.port=8719
-  
+      - JAVA_OPTS=-Xms256m -Xmx512m -Dserver.port=8080 -Dcsp.sentinel.dashboard.server=localhost:8080 -Dproject.name=sentinel-dashboard -Dnacos.server.serverAddr=macula-cloud-nacos:8848 -Djava.security.egd=file:/dev/./urandom -Dcsp.sentinel.api.port=8719
+
   # Rocket MQ
   macula-cloud-rocketmq-server:
     image: foxiswho/rocketmq:4.7.0
@@ -111,15 +110,13 @@ services:
     environment:
       JAVA_OPT_EXT: "-Duser.home=/opt -Xms512M -Xmx512M -Xmn128m"
     command:
-      [
-        "sh",
-        "mqbroker",
-        "-c",
-        "/etc/rocketmq/broker.conf",
-        "-n",
-        "macula-cloud-rocketmq-server:9876",
-        "autoCreateTopicEnable=true",
-      ]
+      - /bin/sh
+      - -c
+      - |
+        rm -f broker1.conf
+        cp /etc/rocketmq/broker.conf broker1.conf 
+        echo "brokerIP1=${HOST_IP}" >> broker1.conf
+        mqbroker -c  broker1.conf -n macula-cloud-rocketmq-server:9876 autoCreateTopicEnable=true
 
   macula-cloud-rocketmq-console:
     image: styletang/rocketmq-console-ng
@@ -132,7 +129,7 @@ services:
     environment:
       JAVA_OPTS: "-Drocketmq.namesrv.addr=macula-cloud-rocketmq-server:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
 
-  # Seata 
+  # Seata
   macula-cloud-seata-server:
     image: seataio/seata-server:latest
     container_name: macula-cloud-seata-server
@@ -146,7 +143,7 @@ services:
     ports:
       - 8091:8091
     volumes:
-      - ${SEATA_HOME}/conf/file.conf:/seata-server/resources/file.conf
       - ${SEATA_HOME}/conf/registry.conf:/seata-server/resources/registry.conf
     environment:
       - TZ=Asia/Shanghai
+      - SEATA_IP=${HOST_IP}

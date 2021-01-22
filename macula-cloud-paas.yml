@@ -6,7 +6,6 @@ networks:
             name: macula-cloud-network
 
 services:
-
     # oauth2
     macula-cloud-oauth2:
         image: registry.cn-shanghai.aliyuncs.com/macula-cloud/macula-cloud-oauth2:latest
