@@ -35,7 +35,7 @@ services:
       - MYSQL_PASS=${DB_PWD}
     volumes:
       - ${MYSQL_HOME}/data:/var/lib/mysql
-      - ${MYSQL_HOME}/conf/my.cnf:/etc/my.cnf
+      - ${MYSQL_HOME}/conf/my.cnf:/etc/my.cnf:ro
       - ${MYSQL_HOME}/sql:/docker-entrypoint-initdb.d
 
   # nacos registry
@@ -58,7 +58,7 @@ services:
       - MYSQL_SERVICE_PORT=3306
       - MYSQL_SERVICE_USER=${DB_USER}
       - MYSQL_SERVICE_PASSWORD=${DB_PWD}
-      - MYSQL_SERVICE_DB_NAME=nacos_config
+      - MYSQL_SERVICE_DB_NAME=nacos
       - JVM_XMS=256m
       - JVM_XMX=512m
 
