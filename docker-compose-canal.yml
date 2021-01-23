@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3"
 
 networks:
   default:
@@ -7,21 +7,21 @@ networks:
 
 services:
   # Canal server
-  # macula-cloud-canal-server:
-  #   image: canal/canal-server:v1.1.4
-  #   container_name: macula-cloud-canal-server
-  #   restart: always
-  #   ports:
-  #     - 9111:11111
-  #   environment:
-  #     - canal.auto.scan=false
-  #     - canal.instance.master.address=macula-cloud-mysql:3306
-  #     - canal.instance.dbUsername=canal
-  #     - canal.instance.dbPassword=canal
-  #     - canal.instance.mysql.slaveId=12
-  #     - canal.instance.filter.regex=esen_approval.apt_approval
-  #   volumes:
-  #     - ${CANAL_HOME}/logs/:/admin/canal-server/logs/
+  macula-cloud-canal-server:
+    image: canal/canal-server:v1.1.4
+    container_name: macula-cloud-canal-server
+    restart: always
+    ports:
+      - 9111:11111
+    environment:
+      - canal.auto.scan=false
+      - canal.instance.master.address=macula-cloud-mysql:3306
+      - canal.instance.dbUsername=canal
+      - canal.instance.dbPassword=canal
+      - canal.instance.mysql.slaveId=12
+      - canal.instance.filter.regex=esen_approval.apt_approval
+    volumes:
+      - ${CANAL_HOME}/logs/:/admin/canal-server/logs/
 
   macula-cloud-canal-admin:
     image: canal/canal-admin:v1.1.4
@@ -32,6 +32,6 @@ services:
     environment:
       - server.port=8089
       - canal.adminUser=admin
-      - canal.adminPasswd=admin
+      - canal.adminPasswd=admin123
     volumes:
       - ${CANAL_HOME}/logs/:/home/admin/canal-admin/logs
