@@ -21,7 +21,7 @@ services:
             SPRING_REDIS_HOST: macula-cloud-redis
             SPRING_REDIS_PASSWORD: ${REDIS_PWD}
             SPRING_REDIS_DATABASE: 1
-            SPRING_DATASOURCE_URL: ${DB_URL}
+            SPRING_DATASOURCE_URL: ${PAAS_DB}
             SPRING_DATASOURCE_USERNAME: ${DB_USER}
             SPRING_DATASOURCE_PASSWORD: ${DB_PWD}
             SPRING_JPA_HIBERNATE_DDLAUTO: update
@@ -45,7 +45,7 @@ services:
             SPRING_REDIS_HOST: macula-cloud-redis
             SPRING_REDIS_PASSWORD: ${REDIS_PWD}
             SPRING_REDIS_DATABASE: 1
-            SPRING_DATASOURCE_URL: ${DB_URL}
+            SPRING_DATASOURCE_URL: ${PAAS_DB}
             SPRING_DATASOURCE_USERNAME: ${DB_USER}
             SPRING_DATASOURCE_PASSWORD: ${DB_PWD}
             SPRING_JPA_HIBERNATE_DDLAUTO: update

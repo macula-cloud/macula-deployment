@@ -6,13 +6,15 @@ networks:
       name: macula-cloud-network
 
 services:
-  # Canal server
+  # Canal Server
   macula-cloud-canal-server:
     image: canal/canal-server:v1.1.4
     container_name: macula-cloud-canal-server
     restart: always
     ports:
       - 9111:11111
+    depends_on:
+      - macula-cloud-canal-admin
     environment:
       - canal.auto.scan=false
       - canal.instance.master.address=macula-cloud-mysql:3306
@@ -20,9 +22,12 @@ services:
       - canal.instance.dbPassword=canal
       - canal.instance.mysql.slaveId=12
       - canal.instance.filter.regex=esen_approval.apt_approval
+      - canal.admin.user=admin
+      - canal.admin.passwd=admin123
     volumes:
       - ${CANAL_HOME}/logs/:/admin/canal-server/logs/
 
+ # Canal Admin
   macula-cloud-canal-admin:
     image: canal/canal-admin:v1.1.4
     container_name: macula-cloud-canal-admin
@@ -31,6 +36,9 @@ services:
       - 8089:8089
     environment:
       - server.port=8089
+      - spring.datasource.url=${CANAL_DB}
+      - spring.datasource.username=${DB_USER}
+      - spring.datasource.password=${DB_PWD}
       - canal.adminUser=admin
       - canal.adminPasswd=admin123
     volumes:
