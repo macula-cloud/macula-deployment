@@ -25,8 +25,9 @@ services:
       - canal.admin.manager=macula-cloud-canal-admin:8089
       - canal.admin.port=11110
       - canal.admin.user=admin
-      - canal.admin.passwd=admin
+      - canal.admin.passwd=4ACFE3202A5FF5CF467898FC58AAB1D615029441
       - canal.admin.register.auto=true
+      - canal.admin.register.cluster=default
     volumes:
       - ${CANAL_HOME}/logs/:/admin/canal-server/logs/
 
