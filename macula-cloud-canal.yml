@@ -12,7 +12,7 @@ services:
     container_name: macula-cloud-canal-server
     restart: always
     ports:
-      - 9111:11111
+      - 11111:11111
     depends_on:
       - macula-cloud-canal-admin
     environment:
