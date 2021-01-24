@@ -22,8 +22,11 @@ services:
       - canal.instance.dbPassword=canal
       - canal.instance.mysql.slaveId=12
       - canal.instance.filter.regex=esen_approval.apt_approval
+      - canal.admin.manager=macula-cloud-canal-admin:8089
+      - canal.admin.port=11110
       - canal.admin.user=admin
-      - canal.admin.passwd=admin123
+      - canal.admin.passwd=admin
+      - canal.admin.register.cluster=default
     volumes:
       - ${CANAL_HOME}/logs/:/admin/canal-server/logs/
 
@@ -36,10 +39,7 @@ services:
       - 8089:8089
     environment:
       - server.port=8089
-      - spring.datasource.url=${CANAL_DB}
-      - spring.datasource.username=${DB_USER}
-      - spring.datasource.password=${DB_PWD}
       - canal.adminUser=admin
-      - canal.adminPasswd=admin123
+      - canal.adminPasswd=admin
     volumes:
       - ${CANAL_HOME}/logs/:/home/admin/canal-admin/logs
