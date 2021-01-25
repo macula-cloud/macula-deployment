@@ -18,7 +18,7 @@ services:
       - canal.adminUser=admin
       - canal.adminPasswd=admin
     volumes:
-      - ${CANAL_HOME}/admin/logs/:/home/admin/canal-admin/logs
+      - ${CANAL_HOME}/logs/:/home/admin/canal-admin/logs
 
   # Canal Server
   macula-cloud-canal-server:
@@ -31,11 +31,19 @@ services:
       - macula-cloud-canal-admin
     environment:
       - canal.auto.scan=false
+      # instance settings
+      - cana.destinations=example
       - canal.instance.master.address=macula-cloud-mysql:3306
       - canal.instance.dbUsername=canal
       - canal.instance.dbPassword=canal
-      - canal.instance.mysql.slaveId=12
-      - canal.instance.filter.regex=esen_approval.apt_approval
+      - canal.instance.connectionCharset=UTF-8
+      - canal.instance.tsdb.enable=true
+      - canal.instance.gtidon=false
+      - canal.instance.detecting.enable=true
+      - canal.instance.detecting.interval.time=3
+      - canal.instance.detecting.retry.threshold=3
+      - canal.instance.detecting.heartbeatHaEnable=true
+      # admin settings
       - canal.admin.manager=macula-cloud-canal-admin:8089
       - canal.admin.port=11110
       - canal.admin.user=admin
@@ -44,4 +52,4 @@ services:
       # - canal.admin.register.cluster=default
       - canal.serverMode=tcp
     volumes:
-      - ${CANAL_HOME}/server/logs/:/admin/canal-server/logs/
+      - ${CANAL_HOME}/logs/:/admin/canal-server/logs/
