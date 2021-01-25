@@ -31,7 +31,7 @@ services:
     depends_on:
       - macula-cloud-canal-admin
     environment:
-      - canal.auto.scan=false
+      - canal.auto.scan=true
       # instance settings
       - cana.destinations=example
       - canal.instance.master.address=macula-cloud-mysql:3306

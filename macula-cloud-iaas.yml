@@ -76,3 +76,14 @@ services:
         cp /etc/rocketmq/broker.conf broker1.conf 
         echo "brokerIP1=${HOST_IP}" >> broker1.conf
         mqbroker -c broker1.conf -n macula-cloud-rocketmq-server:9876 autoCreateTopicEnable=true
+
+  macula-cloud-rocketmq-console:
+    image: styletang/rocketmq-console-ng
+    container_name: macula-cloud-rocketmq-console
+    restart: always
+    depends_on:
+      - macula-cloud-rocketmq-server
+    ports:
+      - 9180:8080
+    environment:
+      JAVA_OPTS: "-Drocketmq.namesrv.addr=macula-cloud-rocketmq-server:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false"
