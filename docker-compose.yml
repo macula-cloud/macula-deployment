@@ -1,0 +1,45 @@
+version: "3"
+
+networks:
+  default:
+    external:
+      name: macula-cloud-network
+
+services:
+  # Rocket MQ
+  macula-cloud-rocketmq-server:
+    image: foxiswho/rocketmq:4.8.0
+    container_name: macula-cloud-rocketmq-server
+    restart: always
+    ports:
+      - 9876:9876
+    volumes:
+      - ${ROCKETMQ_HOME}/data/logs:/opt/logs
+      - ${ROCKETMQ_HOME}/data/store:/opt/store
+    environment:
+      - JAVA_OPT_EXT=-Xms256M -Xmx512M -Xmn128m
+    command: ["sh", "mqnamesrv"]
+
+  macula-cloud-rocketmq-broker:
+    image: foxiswho/rocketmq:4.8.0
+    container_name: macula-cloud-rocketmq-broker
+    restart: always
+    depends_on:
+      - macula-cloud-rocketmq-server
+    ports:
+      - 10909:10909
+      - 10911:10911
+    volumes:
+      - ${ROCKETMQ_HOME}/data/logs:/opt/logs
+      - ${ROCKETMQ_HOME}/data/store:/opt/store
+      - ${ROCKETMQ_HOME}/conf/broker.conf:/etc/rocketmq/broker.conf
+    environment:
+      - JAVA_OPT_EXT=-Xms256M -Xmx512M -Xmn128m
+    command:
+      - /bin/sh
+      - -c
+      - |
+        rm -f broker1.conf
+        cp /etc/rocketmq/broker.conf broker1.conf 
+        echo "brokerIP1=${HOST_IP}" >> broker1.conf
+        mqbroker -c broker1.conf -n macula-cloud-rocketmq-server:9876 autoCreateTopicEnable=true
