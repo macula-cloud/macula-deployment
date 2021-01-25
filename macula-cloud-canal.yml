@@ -6,6 +6,19 @@ networks:
       name: macula-cloud-network
 
 services:
+  # Canal Admin
+  macula-cloud-canal-admin:
+    image: canal/canal-admin:v1.1.4
+    container_name: macula-cloud-canal-admin
+    restart: always
+    ports:
+      - 8089:8089
+    environment:
+      - server.port=8089
+      - canal.adminUser=admin
+      - canal.adminPasswd=admin
+    volumes:
+      - ${CANAL_HOME}/admin/logs/:/home/admin/canal-admin/logs
 
   # Canal Server
   macula-cloud-canal-server:
@@ -28,20 +41,7 @@ services:
       - canal.admin.user=admin
       - canal.admin.passwd=4ACFE3202A5FF5CF467898FC58AAB1D615029441
       - canal.admin.register.auto=true
-      - canal.admin.register.cluster=default
+      # - canal.admin.register.cluster=default
+      - canal.serverMode = tcp
     volumes:
-      - ${CANAL_HOME}/logs/:/admin/canal-server/logs/
-
- # Canal Admin
-  macula-cloud-canal-admin:
-    image: canal/canal-admin:v1.1.4
-    container_name: macula-cloud-canal-admin
-    restart: always
-    ports:
-      - 8089:8089
-    environment:
-      - server.port=8089
-      - canal.adminUser=admin
-      - canal.adminPasswd=admin
-    volumes:
-      - ${CANAL_HOME}/logs/:/home/admin/canal-admin/logs
+      - ${CANAL_HOME}/server/logs/:/admin/canal-server/logs/
