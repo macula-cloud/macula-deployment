@@ -15,10 +15,11 @@ services:
       - 8089:8089
     environment:
       - server.port=8089
+      - spring.datasource.address=macula-cloud-mysql:3306
       - canal.adminUser=admin
       - canal.adminPasswd=admin
     volumes:
-      - ${CANAL_HOME}/logs/:/home/admin/canal-admin/logs
+      - ${CANAL_HOME}/logs/admin/:/home/admin/canal-admin/logs
 
   # Canal Server
   macula-cloud-canal-server:
@@ -39,6 +40,7 @@ services:
       - canal.instance.connectionCharset=UTF-8
       - canal.instance.tsdb.enable=true
       - canal.instance.gtidon=false
+      - canal.instance.filter.regex=.*\\..* 
       - canal.instance.detecting.enable=true
       - canal.instance.detecting.interval.time=3
       - canal.instance.detecting.retry.threshold=3
@@ -52,4 +54,6 @@ services:
       # - canal.admin.register.cluster=default
       - canal.serverMode=tcp
     volumes:
-      - ${CANAL_HOME}/logs/:/admin/canal-server/logs/
+      - ${CANAL_HOME}/conf/canal.properties:/home/admin/canal-server/conf/canal.properties
+      - ${CANAL_HOME}/conf/example:/home/admin/canal-server/conf/example
+      - ${CANAL_HOME}/logs/server:/home/admin/canal-server/logs
