@@ -15,7 +15,9 @@ services:
       - 8089:8089
     environment:
       - server.port=8089
-      - spring.datasource.address=macula-cloud-mysql:3306
+      # - spring.datasource.address=macula-cloud-mysql:3306
+      # - spring.datasource.username=${DB_USER}
+      # - spring.datasource.password=${DB_PWD}
       - canal.adminUser=admin
       - canal.adminPasswd=admin
     volumes:
@@ -40,7 +42,7 @@ services:
       - canal.instance.connectionCharset=UTF-8
       - canal.instance.tsdb.enable=true
       - canal.instance.gtidon=false
-      - canal.instance.filter.regex=.*\\..* 
+      - canal.instance.filter.regex=.*
       - canal.instance.detecting.enable=true
       - canal.instance.detecting.interval.time=3
       - canal.instance.detecting.retry.threshold=3
@@ -51,8 +53,11 @@ services:
       - canal.admin.user=admin
       - canal.admin.passwd=4ACFE3202A5FF5CF467898FC58AAB1D615029441
       - canal.admin.register.auto=true
-      # - canal.admin.register.cluster=default
-      - canal.serverMode=tcp
+      # Rocket MQ
+      - canal.serverMode=rocketmq
+      - canal.mq.servers=macula-cloud-rocketmq-server:9876
+      - canal.mq.topic=example
+      - canal.mq.partition=0
     volumes:
       - ${CANAL_HOME}/conf/canal.properties:/home/admin/canal-server/conf/canal.properties
       - ${CANAL_HOME}/conf/example:/home/admin/canal-server/conf/example
