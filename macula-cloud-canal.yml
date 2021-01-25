@@ -42,6 +42,6 @@ services:
       - canal.admin.passwd=4ACFE3202A5FF5CF467898FC58AAB1D615029441
       - canal.admin.register.auto=true
       # - canal.admin.register.cluster=default
-      - canal.serverMode = tcp
+      - canal.serverMode=tcp
     volumes:
       - ${CANAL_HOME}/server/logs/:/admin/canal-server/logs/
