@@ -6,6 +6,7 @@ networks:
       name: macula-cloud-network
 
 services:
+
   # Canal Server
   macula-cloud-canal-server:
     image: canal/canal-server:v1.1.4

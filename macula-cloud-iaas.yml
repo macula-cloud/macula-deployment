@@ -6,7 +6,8 @@ networks:
       name: macula-cloud-network
 
 services:
-  # redis
+
+  # Redis
   macula-cloud-redis:
     image: redis:latest
     container_name: macula-cloud-redis
@@ -20,7 +21,7 @@ services:
       - ${REDIS_HOME}/data:/data
     command: redis-server --appendonly yes
 
-  # mysql
+  # Mysql
   macula-cloud-mysql:
     image: mysql:5.7
     container_name: macula-cloud-mysql
@@ -37,48 +38,6 @@ services:
       - ${MYSQL_HOME}/data:/var/lib/mysql
       - ${MYSQL_HOME}/conf/my.cnf:/etc/my.cnf:ro
       - ${MYSQL_HOME}/sql:/docker-entrypoint-initdb.d
-
-  # nacos registry
-  macula-cloud-nacos:
-    image: nacos/nacos-server
-    container_name: macula-cloud-nacos
-    restart: always
-    depends_on:
-      - macula-cloud-mysql
-    links:
-      - macula-cloud-mysql
-    ports:
-      - 8848:8848
-      - 9555:9555
-    environment:
-      - TZ=Asia/Shanghai
-      - MODE=standalone
-      - SPRING_DATASOURCE_PLATFORM=mysql
-      - MYSQL_SERVICE_HOST=macula-cloud-mysql
-      - MYSQL_SERVICE_PORT=3306
-      - MYSQL_SERVICE_USER=${DB_USER}
-      - MYSQL_SERVICE_PASSWORD=${DB_PWD}
-      - MYSQL_SERVICE_DB_NAME=nacos
-      - JVM_XMS=256m
-      - JVM_XMX=512m
-
-  # sentinel dashboard
-  macula-cloud-sentinel-dashboard:
-    image: v-sentinel-dashboard
-    container_name: macula-cloud-sentinel-dashboard
-    restart: always
-    build:
-      context: ./sentinel-dashboard
-      dockerfile: Dockerfile
-    depends_on:
-      - macula-cloud-nacos
-    links:
-      - macula-cloud-nacos
-    ports:
-      - 9080:8080
-    environment:
-      - TZ=Asia/Shanghai
-      - JAVA_OPTS=-Xms256m -Xmx512m -Dserver.port=8080 -Dcsp.sentinel.dashboard.server=localhost:8080 -Dproject.name=sentinel-dashboard -Dnacos.server.serverAddr=macula-cloud-nacos:8848 -Djava.security.egd=file:/dev/./urandom -Dcsp.sentinel.api.port=8719
 
   # Rocket MQ
   macula-cloud-rocketmq-server:
@@ -117,33 +76,3 @@ services:
         cp /etc/rocketmq/broker.conf broker1.conf 
         echo "brokerIP1=${HOST_IP}" >> broker1.conf
         mqbroker -c broker1.conf -n macula-cloud-rocketmq-server:9876 autoCreateTopicEnable=true
-
-  macula-cloud-rocketmq-console:
-    image: styletang/rocketmq-console-ng
-    container_name: macula-cloud-rocketmq-console
-    restart: always
-    depends_on:
-      - macula-cloud-rocketmq-server
-    ports:
-      - 9180:8080
-    environment:
-      - JAVA_OPTS=-Drocketmq.namesrv.addr=macula-cloud-rocketmq-server:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false
-
-  # Seata
-  macula-cloud-seata-server:
-    image: seataio/seata-server:latest
-    container_name: macula-cloud-seata-server
-    restart: always
-    depends_on:
-      - macula-cloud-nacos
-      - macula-cloud-mysql
-    links:
-      - macula-cloud-nacos
-      - macula-cloud-mysql
-    ports:
-      - 8091:8091
-    volumes:
-      - ${SEATA_HOME}/conf/registry.conf:/seata-server/resources/registry.conf
-    environment:
-      - TZ=Asia/Shanghai
-      - SEATA_IP=${HOST_IP}
