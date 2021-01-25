@@ -53,10 +53,8 @@ services:
     restart: always
     depends_on:
       - macula-cloud-nacos
-      - macula-cloud-mysql
     links:
       - macula-cloud-nacos
-      - macula-cloud-mysql
     ports:
       - 8091:8091
     volumes:
