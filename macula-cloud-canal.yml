@@ -56,8 +56,8 @@ services:
       # Rocket MQ
       - canal.serverMode=rocketmq
       - canal.mq.servers=macula-cloud-rocketmq-server:9876
-      - canal.mq.topic=example
-      - canal.mq.partition=0
+      - canal.mq.dynamicTopic=.*\\..*
+      - canal.mq.partitionHash=.*\\..*:id
     volumes:
       - ${CANAL_HOME}/conf/canal.properties:/home/admin/canal-server/conf/canal.properties
       - ${CANAL_HOME}/conf/example:/home/admin/canal-server/conf/example
