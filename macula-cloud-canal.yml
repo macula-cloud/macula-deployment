@@ -53,11 +53,11 @@ services:
       - canal.admin.user=admin
       - canal.admin.passwd=4ACFE3202A5FF5CF467898FC58AAB1D615029441
       - canal.admin.register.auto=true
-      # Rocket MQ
-      - canal.serverMode=rocketmq
-      - canal.mq.servers=macula-cloud-rocketmq-server:9876
-      - canal.mq.dynamicTopic=.*\\..*
-      - canal.mq.partitionHash=.*\\..*:id
+      # RocketMQ, Kafka
+      - canal.serverMode=kafka #rocketmq, tcp, kafka
+      - canal.mq.servers=macula-cloud-kafka:9092 #macula-cloud-rocketmq-server:9876
+      - canal.mq.topic=example
+      - canal.mq.partition=0
     volumes:
       - ${CANAL_HOME}/conf/canal.properties:/home/admin/canal-server/conf/canal.properties
       - ${CANAL_HOME}/conf/example:/home/admin/canal-server/conf/example
