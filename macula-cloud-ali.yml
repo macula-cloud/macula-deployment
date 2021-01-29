@@ -12,7 +12,6 @@ services:
     image: nacos/nacos-server
     container_name: macula-cloud-nacos
     restart: always
-    restart: always
     ports:
       - 8848:8848
       - 9555:9555
