@@ -14,9 +14,9 @@ services:
     container_name: macula-cloud-kong-database
     restart: always
     environment:
-      - POSTGRES_USER=KONG
-      - POSTGRES_DB=KONG
-      - POSTGRES_PASSWORD=KONGd
+      - POSTGRES_DB=kong
+      - POSTGRES_USER=kong
+      - POSTGRES_PASSWORD=${DB_PWD}
     ports:
       - "5432:5432"
     volumes:
@@ -38,9 +38,10 @@ services:
     environment:
       - KONG_PG_HOST=macula-cloud-kong-database
       - KONG_DATABASE=postgres
-      - KONG_PG_PASSWORD=KONG
-      - KONG_CASSANDRA_CONTACT_POINTS=macula-cloud-kong-database
+      - KONG_PG_PASSWORD=${DB_PWD}
     depends_on:
+      - macula-cloud-kong-database
+    links:
       - macula-cloud-kong-database
 
   #######################################
@@ -56,8 +57,12 @@ services:
       - KONG_PROXY_LISTEN_SSL=0.0.0.0:8443
       - KONG_ADMIN_LISTEN=0.0.0.0:8001
       - KONG_DATABASE=postgres
-      - KONG_PG_PASSWORD=KONG
-      - KONG_CASSANDRA_CONTACT_POINTS=macula-cloud-kong-database
+      - KONG_PG_PASSWORD=${DB_PWD}
+      - KONG_PROXY_ACCESS_LOG=/kong/access.log
+      - KONG_PROXY_ACCESS_LOG=/usr/local/kong/logs/proxy_access.log
+      - KONG_ADMIN_ACCESS_LOG=/usr/local/kong/logs/admin_access.log
+      - KONG_PROXY_ERROR_LOG=/usr/local/kong/logs/proxy_error.log
+      - KONG_ADMIN_ERROR_LOG=/usr/local/kong/logs/admin_error.log
     depends_on:
       - macula-cloud-kong-migration
       - macula-cloud-kong-database
@@ -72,34 +77,4 @@ services:
       - "8443:8443"
     volumes:
       - ${KONG_HOME}/conf/kong.conf:/etc/kong/kong.conf
-
-  #######################################
-  # Konga database prepare
-  #######################################
-  macula-cloud-konga-prepare:
-    image: pantsel/konga:next
-    container_name: macula-cloud-konga-prepare
-    command: "-c prepare -a postgres -u postgresql://KONG:KONG@macula-cloud-kong-database:5432/KONG"
-    restart: on-failure
-    depends_on:
-      - macula-cloud-kong-database
-
-  #######################################
-  # Konga: Kong GUIs
-  #######################################
-  macula-cloud-konga:
-    image: pantsel/konga:latest
-    container_name: macula-cloud-konga
-    restart: always
-    environment:
-      - DB_ADAPTER: postgres
-      - DB_HOST: macula-cloud-kong-database
-      - DB_USER: KONG
-      - TOKEN_SECRET: km1GUr4RkcQD7DewhJPNXrCuZwcKmqjb
-      - DB_DATABASE: KONG
-      - NODE_ENV: production
-      - DB_PASSWORD: KONG
-    depends_on:
-      - macula-cloud-kong-database
-    ports:
-      - "1337:1337"
+      - ${KONG_HOME}/logs:/usr/local/kong/logs
