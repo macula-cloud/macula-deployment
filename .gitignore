@@ -30,3 +30,7 @@ target/
 ### mac ###
 .DS_Store
 **/.DS_Store
+
+### Data ###
+**/h2.mv.db
+**/meta.dat
