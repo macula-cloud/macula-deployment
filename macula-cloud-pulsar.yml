@@ -1,0 +1,157 @@
+version: "3"
+
+networks:
+  default:
+    external:
+      name: macula-cloud-network
+
+services:
+  zoo1:
+    image: apachepulsar/pulsar
+    hostname: zoo1
+    ports:
+      - "2181:2181"
+    environment:
+      - ZK_ID=1
+      - PULSAR_ZK_CONF=/conf/zookeeper.conf
+    volumes:
+      - ${PULSAR_HOME}/data/zoo1:/pulsar/data/zookeeper/
+      - ${PULSAR_HOME}/logs/zoo1:/pulsar/logs
+      - ${PULSAR_HOME}/conf:/conf
+      - ${PULSAR_HOME}/scripts:/scripts
+    command: /bin/bash "/scripts/start_zk.sh"
+
+  zoo2:
+    image: apachepulsar/pulsar
+    hostname: zoo2
+    ports:
+      - "2182:2181"
+    environment:
+      - ZK_ID=2
+      - PULSAR_ZK_CONF=/conf/zookeeper.conf
+    volumes:
+      - ${PULSAR_HOME}/data/zoo2:/pulsar/data/zookeeper/
+      - ${PULSAR_HOME}/logs/zoo2:/pulsar/logs
+      - ${PULSAR_HOME}/conf:/conf
+      - ${PULSAR_HOME}/scripts:/scripts
+    command: /bin/bash "/scripts/start_zk.sh"
+
+  zoo3:
+    image: apachepulsar/pulsar
+    hostname: zoo3
+    ports:
+      - "2183:2181"
+    environment:
+      - ZK_ID=3
+      - PULSAR_ZK_CONF=/conf/zookeeper.conf
+    volumes:
+      - ${PULSAR_HOME}/data/zoo3:/pulsar/data/zookeeper/
+      - ${PULSAR_HOME}/logs/zoo3:/pulsar/logs
+      - ${PULSAR_HOME}/conf:/conf
+      - ${PULSAR_HOME}/scripts:/scripts
+    command: /bin/bash "/scripts/start_zk.sh"
+
+  bookie1:
+    image: apachepulsar/pulsar
+    hostname: bookie1
+    ports:
+      - "3181:3181"
+    environment:
+      - BOOKIE_CONF=/conf/bookkeeper.conf
+    volumes:
+      - ${PULSAR_HOME}/data/bookie1:/pulsar/data/bookkeeper/
+      - ${PULSAR_HOME}/logs/bookie1:/pulsar/logs
+      - ${PULSAR_HOME}/conf:/conf
+      - ${PULSAR_HOME}/scripts:/scripts
+    command: /bin/bash "/scripts/start_mainbk.sh"
+    depends_on:
+      - zoo1
+      - zoo2
+      - zoo3
+
+  bookie2:
+    image: apachepulsar/pulsar
+    hostname: bookie2
+    ports:
+      - "3182:3181"
+    environment:
+      - BOOKIE_CONF=/conf/bookkeeper.conf
+    volumes:
+      - ${PULSAR_HOME}/data/bookie2:/pulsar/data/bookkeeper/
+      - ${PULSAR_HOME}/logs/bookie2:/pulsar/logs
+      - ${PULSAR_HOME}/conf:/conf
+      - ${PULSAR_HOME}/scripts:/scripts
+    command: /bin/bash "/scripts/start_otherbk.sh"
+    depends_on:
+      - bookie1
+
+  bookie3:
+    image: apachepulsar/pulsar
+    hostname: bookie3
+    ports:
+      - "3183:3181"
+    environment:
+      - BOOKIE_CONF=/conf/bookkeeper.conf
+    volumes:
+      - ${PULSAR_HOME}/data/bookie3:/pulsar/data/bookkeeper/
+      - ${PULSAR_HOME}/logs/bookie3:/pulsar/logs
+      - ${PULSAR_HOME}/conf:/conf
+      - ${PULSAR_HOME}/scripts:/scripts
+    command: /bin/bash "/scripts/start_otherbk.sh"
+    depends_on:
+      - bookie1
+
+  broker1:
+    image: apachepulsar/pulsar
+    hostname: broker1
+    environment:
+      - PULSAR_BROKER_CONF=/conf/broker.conf
+    ports:
+      - "6660:6650"
+      - "8090:8080"
+    volumes:
+      - ${PULSAR_HOME}/data/broker1:/pulsar/data/broker/
+      - ${PULSAR_HOME}/logs/broker1:/pulsar/logs
+      - ${PULSAR_HOME}/conf:/conf
+      - ${PULSAR_HOME}/scripts:/scripts
+    command: /bin/bash "/scripts/start_broker.sh"
+    depends_on:
+      - bookie1
+      - bookie2
+      - bookie3
+
+  broker2:
+    image: apachepulsar/pulsar
+    hostname: broker2
+    environment:
+      - PULSAR_BROKER_CONF=/conf/broker.conf
+    ports:
+      - "6661:6650"
+      - "8091:8080"
+    volumes:
+      - ${PULSAR_HOME}/data/broker2:/pulsar/data/broker/
+      - ${PULSAR_HOME}/logs/broker2:/pulsar/logs
+      - ${PULSAR_HOME}/conf:/conf
+      - ${PULSAR_HOME}/scripts:/scripts
+    command: /bin/bash "/scripts/start_broker.sh"
+    depends_on:
+      - bookie1
+      - bookie2
+      - bookie3
+
+  pulsar-proxy:
+    image: apachepulsar/pulsar
+    hostname: pulsar-proxy
+    ports:
+      - "6650:6650"
+      - "8080:8080"
+    environment:
+      - PULSAR_PROXY_CONF="/conf/proxy.conf"
+    volumes:
+      - ${PULSAR_HOME}/logs/proxy:/pulsar/logs
+      - ${PULSAR_HOME}/conf:/conf
+      - ${PULSAR_HOME}/scripts:/scripts
+    command: /bin/bash "/scripts/start_proxy.sh"
+    depends_on:
+      - broker1
+      - broker2
