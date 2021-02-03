@@ -78,3 +78,31 @@ services:
     volumes:
       - ${KONG_HOME}/conf/kong.conf:/etc/kong/kong.conf
       - ${KONG_HOME}/logs:/usr/local/kong/logs
+
+  #######################################
+  # Konga database prepare
+  #######################################
+  macula-cloud-konga-prepare:
+    image: pantsel/konga:next
+    container_name: macula-cloud-konga-prepare
+    command: "-c prepare -a postgres -u postgresql://kong:${DB_PWD}@macula-cloud-kong-database:5432/kong"
+    restart: on-failure
+    depends_on:
+      - macula-cloud-kong-database
+
+  #######################################
+  # Konga: Kong GUIs
+  #######################################
+  macula-cloud-kong-admin:
+    image: pantsel/konga:latest
+    container_name: macula-cloud-kong-admin
+    restart: always
+    environment:
+      - DB_ADAPTER=postgres
+      - DB_URI=postgresql://kong:${DB_PWD}@macula-cloud-kong-database:5432/kong
+      - TOKEN_SECRET=km1GUr4RkcQD7DewhJPNXrCuZwcKmqjb
+      - NODE_ENV=production
+    depends_on:
+      - macula-cloud-kong-database
+    ports:
+      - "1337:1337"
