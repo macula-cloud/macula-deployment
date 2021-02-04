@@ -6,9 +6,11 @@ networks:
       name: macula-cloud-network
 
 services:
-  zoo1:
+  # Pulsar Zookeeper Cluster
+  macula-cloud-pulsar-zookeeper1:
     image: apachepulsar/pulsar
-    hostname: zoo1
+    container_name: macula-cloud-pulsar-zookeeper1
+    restart: always
     ports:
       - "2181:2181"
     environment:
@@ -21,9 +23,10 @@ services:
       - ${PULSAR_HOME}/scripts:/scripts
     command: /bin/bash "/scripts/start_zk.sh"
 
-  zoo2:
+  macula-cloud-pulsar-zookeeper2:
     image: apachepulsar/pulsar
-    hostname: zoo2
+    container_name: macula-cloud-pulsar-zookeeper2
+    restart: always
     ports:
       - "2182:2181"
     environment:
@@ -36,9 +39,10 @@ services:
       - ${PULSAR_HOME}/scripts:/scripts
     command: /bin/bash "/scripts/start_zk.sh"
 
-  zoo3:
+  macula-cloud-pulsar-zookeeper3:
     image: apachepulsar/pulsar
-    hostname: zoo3
+    container_name: macula-cloud-pulsar-zookeeper3
+    restart: always
     ports:
       - "2183:2181"
     environment:
@@ -51,9 +55,11 @@ services:
       - ${PULSAR_HOME}/scripts:/scripts
     command: /bin/bash "/scripts/start_zk.sh"
 
-  bookie1:
+  # Pulsar Bookkeeper Cluster
+  macula-cloud-pulsar-bookie1:
     image: apachepulsar/pulsar
-    hostname: bookie1
+    container_name: macula-cloud-pulsar-bookie1
+    restart: always
     ports:
       - "3181:3181"
     environment:
@@ -65,45 +71,49 @@ services:
       - ${PULSAR_HOME}/scripts:/scripts
     command: /bin/bash "/scripts/start_mainbk.sh"
     depends_on:
-      - zoo1
-      - zoo2
-      - zoo3
+      - macula-cloud-pulsar-zookeeper1
+      - macula-cloud-pulsar-zookeeper2
+      - macula-cloud-pulsar-zookeeper3
 
-  bookie2:
-    image: apachepulsar/pulsar
-    hostname: bookie2
-    ports:
-      - "3182:3181"
-    environment:
-      - BOOKIE_CONF=/conf/bookkeeper.conf
-    volumes:
-      - ${PULSAR_HOME}/data/bookie2:/pulsar/data/bookkeeper/
-      - ${PULSAR_HOME}/logs/bookie2:/pulsar/logs
-      - ${PULSAR_HOME}/conf:/conf
-      - ${PULSAR_HOME}/scripts:/scripts
-    command: /bin/bash "/scripts/start_otherbk.sh"
-    depends_on:
-      - bookie1
+  # macula-cloud-pulsar-bookie2:
+  #   image: apachepulsar/pulsar
+  #   container_name: macula-cloud-pulsar-bookie2
+  #   restart: always
+  #   ports:
+  #     - "3182:3181"
+  #   environment:
+  #     - BOOKIE_CONF=/conf/bookkeeper.conf
+  #   volumes:
+  #     - ${PULSAR_HOME}/data/bookie2:/pulsar/data/bookkeeper/
+  #     - ${PULSAR_HOME}/logs/bookie2:/pulsar/logs
+  #     - ${PULSAR_HOME}/conf:/conf
+  #     - ${PULSAR_HOME}/scripts:/scripts
+  #   command: /bin/bash "/scripts/start_otherbk.sh"
+  #   depends_on:
+  #     - macula-cloud-pulsar-bookie1
 
-  bookie3:
-    image: apachepulsar/pulsar
-    hostname: bookie3
-    ports:
-      - "3183:3181"
-    environment:
-      - BOOKIE_CONF=/conf/bookkeeper.conf
-    volumes:
-      - ${PULSAR_HOME}/data/bookie3:/pulsar/data/bookkeeper/
-      - ${PULSAR_HOME}/logs/bookie3:/pulsar/logs
-      - ${PULSAR_HOME}/conf:/conf
-      - ${PULSAR_HOME}/scripts:/scripts
-    command: /bin/bash "/scripts/start_otherbk.sh"
-    depends_on:
-      - bookie1
+  # macula-cloud-pulsar-bookie3:
+  #   image: apachepulsar/pulsar
+  #   container_name: macula-cloud-pulsar-bookie3
+  #   restart: always
+  #   ports:
+  #     - "3183:3181"
+  #   environment:
+  #     - BOOKIE_CONF=/conf/bookkeeper.conf
+  #   volumes:
+  #     - ${PULSAR_HOME}/data/bookie3:/pulsar/data/bookkeeper/
+  #     - ${PULSAR_HOME}/logs/bookie3:/pulsar/logs
+  #     - ${PULSAR_HOME}/conf:/conf
+  #     - ${PULSAR_HOME}/scripts:/scripts
+  #   command: /bin/bash "/scripts/start_otherbk.sh"
+  #   depends_on:
+  #     - macula-cloud-pulsar-bookie1
 
-  broker1:
+  # Pulsar Broker Cluster
+  macula-cloud-pulsar-broker1:
     image: apachepulsar/pulsar
-    hostname: broker1
+    container_name: macula-cloud-pulsar-broker1
+    restart: always
     environment:
       - PULSAR_BROKER_CONF=/conf/broker.conf
     ports:
@@ -116,42 +126,64 @@ services:
       - ${PULSAR_HOME}/scripts:/scripts
     command: /bin/bash "/scripts/start_broker.sh"
     depends_on:
-      - bookie1
-      - bookie2
-      - bookie3
+      - macula-cloud-pulsar-bookie1
+      # - macula-cloud-pulsar-bookie2
+      # - macula-cloud-pulsar-bookie3
 
-  broker2:
-    image: apachepulsar/pulsar
-    hostname: broker2
-    environment:
-      - PULSAR_BROKER_CONF=/conf/broker.conf
-    ports:
-      - "6661:6650"
-      - "8091:8080"
-    volumes:
-      - ${PULSAR_HOME}/data/broker2:/pulsar/data/broker/
-      - ${PULSAR_HOME}/logs/broker2:/pulsar/logs
-      - ${PULSAR_HOME}/conf:/conf
-      - ${PULSAR_HOME}/scripts:/scripts
-    command: /bin/bash "/scripts/start_broker.sh"
-    depends_on:
-      - bookie1
-      - bookie2
-      - bookie3
+  # macula-cloud-pulsar-broker2:
+  #   image: apachepulsar/pulsar
+  #   container_name: macula-cloud-pulsar-broker2
+  #   restart: always
+  #   hostname: broker2
+  #   environment:
+  #     - PULSAR_BROKER_CONF=/conf/broker.conf
+  #   ports:
+  #     - "6661:6650"
+  #     - "8091:8080"
+  #   volumes:
+  #     - ${PULSAR_HOME}/data/broker2:/pulsar/data/broker/
+  #     - ${PULSAR_HOME}/logs/broker2:/pulsar/logs
+  #     - ${PULSAR_HOME}/conf:/conf
+  #     - ${PULSAR_HOME}/scripts:/scripts
+  #   command: /bin/bash "/scripts/start_broker.sh"
+  #   depends_on:
+  #     - macula-cloud-pulsar-bookie1
+  #     - macula-cloud-pulsar-bookie2
+  #     - macula-cloud-pulsar-bookie3
 
-  pulsar-proxy:
+  # Pulsar Proxy
+  macula-cloud-pulsar-proxy:
     image: apachepulsar/pulsar
-    hostname: pulsar-proxy
+    container_name: macula-cloud-pulsar-proxy
+    restart: always
     ports:
       - "6650:6650"
       - "8080:8080"
     environment:
-      - PULSAR_PROXY_CONF="/conf/proxy.conf"
+      - PULSAR_PROXY_CONF=/conf/proxy.conf
     volumes:
       - ${PULSAR_HOME}/logs/proxy:/pulsar/logs
       - ${PULSAR_HOME}/conf:/conf
       - ${PULSAR_HOME}/scripts:/scripts
     command: /bin/bash "/scripts/start_proxy.sh"
     depends_on:
-      - broker1
-      - broker2
+      - macula-cloud-pulsar-broker1
+      # - macula-cloud-pulsar-broker2
+
+  # Pulsar Manager
+  macula-cloud-pulsar-manager:
+    image: apachepulsar/pulsar-manager
+    container_name: macula-cloud-pulsar-manager
+    restart: always
+    ports:
+      - "9527:9527"
+      - "7750:7750"
+    environment:
+      - TZ=Asia/Shanghai
+      - SPRING_CONFIGURATION_FILE=/pulsar-manager/conf/application-manager.properties
+      - logging.path=/pulsar-manager/logs/
+    volumes:
+      - ${PULSAR_HOME}/logs/manager:/pulsar-manager/logs
+      - ${PULSAR_HOME}/conf:/pulsar-manager/conf
+    depends_on:
+      - macula-cloud-pulsar-proxy
