@@ -23,7 +23,7 @@ services:
 
   # Mysql
   macula-cloud-mysql:
-    image: mysql:5.7
+    image: mysql:8.0
     container_name: macula-cloud-mysql
     restart: always
     ports:
@@ -32,8 +32,6 @@ services:
       - TZ=Asia/Shanghai
       - MYSQL_DATABASE=macula-cloud
       - MYSQL_ROOT_PASSWORD=${DB_PWD}
-      - MYSQL_USER=${DB_USER}
-      - MYSQL_PASS=${DB_PWD}
     volumes:
       - ${MYSQL_HOME}/data:/var/lib/mysql
       - ${MYSQL_HOME}/conf/my.cnf:/etc/my.cnf:ro

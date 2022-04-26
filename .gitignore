@@ -27,6 +27,9 @@ target/
 /nbdist/
 /.nb-gradle/
 
+### VS Code ###
+/.vscode/
+
 ### mac ###
 .DS_Store
 **/.DS_Store
