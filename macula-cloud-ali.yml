@@ -9,11 +9,12 @@ services:
 
   # Nacos registry
   macula-cloud-nacos:
-    image: nacos/nacos-server
+    image: nacos/nacos-server:2.1.0
     container_name: macula-cloud-nacos
     restart: always
     ports:
       - 8848:8848
+      - 9849:9848
       - 9555:9555
     environment:
       - TZ=Asia/Shanghai
