@@ -2,19 +2,19 @@ version: "3"
 
 networks:
   default:
-    external:
-      name: macula-cloud-network
+    name: macula-cloud-network
+    external: true
 
 services:
 
   # Nacos registry
   macula-cloud-nacos:
-    image: nacos/nacos-server:2.1.0
+    image: nacos/nacos-server:v2.1.0
     container_name: macula-cloud-nacos
     restart: always
     ports:
       - 8848:8848
-      - 9849:9848
+      - 9848:9848
       - 9555:9555
     environment:
       - TZ=Asia/Shanghai
@@ -25,6 +25,7 @@ services:
       - MYSQL_SERVICE_USER=${DB_USER}
       - MYSQL_SERVICE_PASSWORD=${DB_PWD}
       - MYSQL_SERVICE_DB_NAME=nacos
+      - MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
       - JVM_XMS=256m
       - JVM_XMX=512m
 

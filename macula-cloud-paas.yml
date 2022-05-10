@@ -1,9 +1,9 @@
 version: "3"
 
 networks:
-    default:
-        external:
-            name: macula-cloud-network
+  default:
+    name: macula-cloud-network
+    external: true
 
 services:
     # oauth2
