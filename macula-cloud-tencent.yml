@@ -1,0 +1,26 @@
+version: "3"
+
+networks:
+  default:
+    name: macula-cloud-network
+    external: true
+
+services:
+
+  # Polaris registry
+  macula-cloud-polaris:
+    image: polarismesh/polaris-server-standalone:latest
+    container_name: macula-cloud-polaris
+    restart: always
+    ports:
+      - 8080:8080
+      - 8090:8090
+      - 8091:8091
+      - 8093:8093
+      - 8761:8761
+      - 9000:9000
+      - 9090:9090
+      - 15010:15010
+    environment:
+      - TZ=Asia/Shanghai
+      - MODE=standalone
