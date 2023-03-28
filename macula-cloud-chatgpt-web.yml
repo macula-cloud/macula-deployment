@@ -8,11 +8,13 @@ networks:
 services:
   app:
     image: chenzhaoyu94/chatgpt-web # 总是使用 latest ,更新时重新 pull 该 tag 镜像即可
+    container_name: macula-cloud-chatgpt-web
     ports:
       - 3002:3002
     environment:
       # 二选一
-      OPENAI_API_KEY: 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
+      OPENAI_API_KEY: 
+      # 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
       # 二选一
       OPENAI_ACCESS_TOKEN: 
       # API接口地址，可选，设置 OPENAI_API_KEY 时可用

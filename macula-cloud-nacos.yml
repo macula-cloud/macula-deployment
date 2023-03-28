@@ -19,6 +19,9 @@ services:
     environment:
       - TZ=Asia/Shanghai
       - MODE=standalone
+      - NACOS_AUTH_TOKEN=8b92c609089f74db3c5ee04bd7d4d89e8b92c609089f74db3c5ee04bd7d4d89e
+      - NACOS_AUTH_IDENTITY_KEY=macula
+      - NACOS_AUTH_IDENTITY_VALUE=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYWN1bGEtY2xvdWQiOlt7Im1hY3VsYSI6ImNsb3VkIn1dLCJpYXQiOjE2Nzk5OTc0NjYsImV4cCI6MTkwMDg1NzU5OSwiYXVkIjoiIiwiaXNzIjoiIiwic3ViIjoiIn0.6ck3z41Ph06cH8QE70uPZYM8p2ae_BNGPE-suOChHUs
       - SPRING_DATASOURCE_PLATFORM=mysql
       - MYSQL_SERVICE_HOST=macula-cloud-mysql
       - MYSQL_SERVICE_PORT=3306
