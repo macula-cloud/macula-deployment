@@ -1,0 +1,22 @@
+version: "3"
+
+networks:
+  default:
+    name: macula-cloud-network
+    external: true
+
+services:
+
+  # Postgres
+  macula-cloud-postgres:
+    image: postgres:latest
+    container_name: macula-cloud-postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      - TZ=Asia/Shanghai
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PWD}
+    volumes:
+      - ${POSTGRES_HOME}/data:/var/lib/postgresql/data
