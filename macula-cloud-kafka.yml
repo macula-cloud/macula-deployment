@@ -6,30 +6,30 @@ networks:
     external: true
 
 services:
-  # Zookeeper
-  macula-cloud-zookeeper:
-    image: wurstmeister/zookeeper
-    container_name: macula-cloud-zookeeper
-    restart: always
-    ports:
-      - 2181:2181
-    volumes:
-      - ${KAFKA_HOME}/data:/data
-
-  # Kafka
+  # Kafka https://hub.docker.com/r/bitnami/kafka
   macula-cloud-kafka:
-    image: wurstmeister/kafka
     container_name: macula-cloud-kafka
-    restart: always
-    depends_on:
-      - macula-cloud-zookeeper
+    image: bitnami/kafka:latest
     ports:
       - 9092:9092
+      - 9093:9093
     environment:
-      KAFKA_BROKER_ID: 0
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${HOST_IP}:9092
-      KAFKA_CREATE_TOPICS: "example:2:0"
-      KAFKA_ZOOKEEPER_CONNECT: macula-cloud-zookeeper:2181
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-    volumes:
-      - ${KAFKA_HOME}/logs:/kafka
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://${KAFKA_IP}:9092
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@${KAFKA_IP}:9093
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_SOCKET_REQUEST_MAX_BYTES=419430400
+
+  macula-cloud-kafka-ui:
+    container_name: macula-cloud-kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 9180:8080
+    environment:
+    - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=macula-cloud-kafka:9092

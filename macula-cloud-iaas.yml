@@ -6,7 +6,6 @@ networks:
     external: true
 
 services:
-
   # Redis
   macula-cloud-redis:
     image: redis:latest
@@ -28,6 +27,8 @@ services:
     restart: always
     ports:
       - 3306:3306
+    security_opt:
+      - seccomp:unconfined
     environment:
       - TZ=Asia/Shanghai
       - MYSQL_DATABASE=macula-cloud

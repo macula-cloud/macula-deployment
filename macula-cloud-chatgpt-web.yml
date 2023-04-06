@@ -13,8 +13,7 @@ services:
       - 3002:3002
     environment:
       # 二选一
-      OPENAI_API_KEY: 
-      # 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
+      OPENAI_API_KEY: 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
       # 二选一
       OPENAI_ACCESS_TOKEN: 
       # API接口地址，可选，设置 OPENAI_API_KEY 时可用
