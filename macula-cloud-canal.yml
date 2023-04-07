@@ -8,7 +8,7 @@ networks:
 services:
   # Canal Admin
   macula-cloud-canal-admin:
-    image: canal/canal-admin:v1.1.4
+    image: canal/canal-admin:v1.1.6
     container_name: macula-cloud-canal-admin
     restart: always
     ports:
@@ -25,7 +25,7 @@ services:
 
   # Canal Server
   macula-cloud-canal-server:
-    image: canal/canal-server:v1.1.4
+    image: canal/canal-server:v1.1.6
     container_name: macula-cloud-canal-server
     restart: always
     ports:
