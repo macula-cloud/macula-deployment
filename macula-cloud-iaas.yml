@@ -32,7 +32,7 @@ services:
     environment:
       - TZ=Asia/Shanghai
       - MYSQL_DATABASE=macula-cloud
-      - MYSQL_ROOT_PASSWORD=${DB_PWD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PWD}
     volumes:
       - ${MYSQL_HOME}/data:/var/lib/mysql
       - ${MYSQL_HOME}/conf/my.cnf:/etc/my.cnf:ro

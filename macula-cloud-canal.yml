@@ -16,8 +16,8 @@ services:
     environment:
       - server.port=8089
       # - spring.datasource.address=macula-cloud-mysql:3306
-      # - spring.datasource.username=${DB_USER}
-      # - spring.datasource.password=${DB_PWD}
+      # - spring.datasource.username=${MYSQL_USER}
+      # - spring.datasource.password=${MYSQL_PWD}
       - canal.adminUser=admin
       - canal.adminPasswd=admin
     volumes:
@@ -36,9 +36,9 @@ services:
       - canal.auto.scan=true
       # instance settings
       - cana.destinations=example
-      - canal.instance.master.address=macula-cloud-mysql:3306
-      - canal.instance.dbUsername=canal
-      - canal.instance.dbPassword=canal
+      - canal.instance.master.address=application.aciplaw.com:3306
+      - canal.instance.dbUsername=acipcc
+      - canal.instance.dbPassword=Acip_cc@53
       - canal.instance.connectionCharset=UTF-8
       - canal.instance.tsdb.enable=true
       - canal.instance.gtidon=false

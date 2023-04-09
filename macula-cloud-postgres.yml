@@ -16,7 +16,7 @@ services:
       - 5432:5432
     environment:
       - TZ=Asia/Shanghai
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PWD}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PWD}
     volumes:
       - ${POSTGRES_HOME}/data:/var/lib/postgresql/data

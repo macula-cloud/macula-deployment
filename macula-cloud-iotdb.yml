@@ -1,0 +1,19 @@
+version: "3"
+
+networks:
+  default:
+    name: macula-cloud-network
+    external: true
+
+services:
+  macula-cloud-iotdb:
+    image: apache/iotdb:0.13.3-node
+    container_name: macula-cloud-iotdb
+    restart: always
+    environment:
+      TZ: Asia/Shanghai
+    ports:
+      - 8181:8081
+      - 6667:6667
+    volumes:
+      - ${IOTDB_HOME}/data:/iotdb/data

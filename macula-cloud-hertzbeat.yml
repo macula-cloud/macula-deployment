@@ -1,0 +1,31 @@
+version: "3"
+
+networks:
+  default:
+    name: macula-cloud-network
+    external: true
+
+services:
+  macula-cloud-hertzbeat:
+    image: tancloud/hertzbeat
+    container_name: macula-cloud-hertzbeat
+    restart: always
+    volumes:
+      - ${HERTZBEAT_HOME}/conf/application.yml:/opt/hertzbeat/config/application.yml
+      - ${HERTZBEAT_HOME}/conf/sureness.yml:/opt/hertzbeat/config/sureness.yml
+    ports:
+      - 1157:1157
+    environment:
+      TZ: Asia/Shanghai
+      LANG: zh_CN.UTF-8
+      MYSQL_HOST: macula-cloud-mysql
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PWD: ${MYSQL_PWD}
+      IOTDB_HOST: macula-cloud-iotdb
+      IOTDB_USER: ${IOTDB_USER}
+      IOTDB_PWD: ${IOTDB_PWD}
+      REDIS_HOST: macula-cloud-redis
+      REDIS_PWD: ${REDIS_PWD}
+      MAIL_HOST: smtp.qq.com
+      MAIL_USER: abc
+      MAIL_PWD: efg

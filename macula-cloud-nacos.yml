@@ -25,8 +25,8 @@ services:
       - SPRING_DATASOURCE_PLATFORM=mysql
       - MYSQL_SERVICE_HOST=macula-cloud-mysql
       - MYSQL_SERVICE_PORT=3306
-      - MYSQL_SERVICE_USER=${DB_USER}
-      - MYSQL_SERVICE_PASSWORD=${DB_PWD}
+      - MYSQL_SERVICE_USER=${MYSQL_USER}
+      - MYSQL_SERVICE_PASSWORD=${MYSQL_PWD}
       - MYSQL_SERVICE_DB_NAME=nacos
       - MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
       - JVM_XMS=256m
