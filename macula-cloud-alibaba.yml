@@ -13,8 +13,8 @@ services:
     container_name: macula-cloud-sentinel-dashboard
     restart: always
     build:
-      context: ./sentinel-dashboard
-      dockerfile: Dockerfile
+      context: ./sentinel
+      dockerfile: Dockerfile-dashboard
     depends_on:
       - macula-cloud-nacos
     links:
