@@ -1,0 +1,22 @@
+version: "3"
+
+networks:
+  default:
+    name: macula-cloud-network
+    external: true
+
+services:
+
+  # MS SQLServer
+  macula-cloud-mssql:
+    image: mcr.microsoft.com/mssql/server:latest
+    container_name: macula-cloud-mssql
+    restart: always
+    ports:
+      - 1433:1433
+    volumes:
+    -  ${MSSQL_HOME}/data:/var/opt/mssql/data
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${MSSQL_PWD}
+      - MSSQL_AGENT_ENABLED=true
