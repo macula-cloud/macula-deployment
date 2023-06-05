@@ -1,0 +1,17 @@
+version: "3"
+
+networks:
+  default:
+    name: macula-cloud-network
+    external: true
+
+services:
+
+  # Postgres
+  postgres:
+    image: quay.io/debezium/example-postgres:${DEBEZIUM_VERSION}
+    ports:
+     - 5432:5432
+    environment:
+     - POSTGRES_USER=postgres
+     - POSTGRES_PASSWORD=postgres

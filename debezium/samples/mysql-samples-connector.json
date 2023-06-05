@@ -1,0 +1,16 @@
+{
+    "name": "mysql-samples-connector",
+    "config": {
+        "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+        "debezium.inconsistent.schema.handling.mode": "warning",
+        "topic.prefix": "samples",
+        "database.user": "root",
+        "schema.history.internal.kafka.topic": "samples.his",
+        "database.server.id": "1",
+        "database.hostname": "macula-cloud-mysql",
+        "database.password": "#######",
+        "schema.history.internal.kafka.bootstrap.servers": "macula-cloud-kafka:9092",
+        "snapshot.mode": "schema_only",
+        "provide.transaction.metadata": "true"
+    }
+}

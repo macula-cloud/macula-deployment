@@ -1,0 +1,25 @@
+{
+    "name": "mysql-samples-sink",
+    "config": {
+        "connector.class": "io.debezium.connector.jdbc.JdbcSinkConnector",
+        "connection.url": "jdbc:mysql://macula-cloud-mysql:3306/debezium_replica?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&tinyInt1isBit=false&allowMultiQueries=true&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&useAffectedRows=true",
+        "connection.username": "root",
+        "connection.password": "macula@^cloud$",
+        "database.time_zone": "UTC",
+        "topics.regex": "samples.dbo.(.*)",
+        "schema.evolution": "basic",
+        "primary.key.mode": "record_key",
+        "insert.mode": "upsert",
+        "delete.enabled": "true",
+        "tasks.max": "1",
+        "transforms": "dropPrefix, AddPrefix, ExtractField",
+        "transforms.dropPrefix.type": "org.apache.kafka.connect.transforms.RegexRouter",
+        "transforms.dropPrefix.regex": "mssql.order.dbo.(.*)",
+        "transforms.dropPrefix.replacement": "$1",
+        "transforms.AddPrefix.type": "org.apache.kafka.connect.transforms.RegexRouter",
+        "transforms.AddPrefix.regex": ".*",
+        "transforms.AddPrefix.replacement": "sync_bos_$0",
+        "transforms.ExtractField.type": "org.apache.kafka.connect.transforms.ExtractField$Value",
+        "transforms.ExtractField.field": "after"
+    }
+}
