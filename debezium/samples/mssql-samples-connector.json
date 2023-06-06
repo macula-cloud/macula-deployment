@@ -9,7 +9,7 @@
         "database.port": "1433",
         "provide.transaction.metadata": "true",
         "topic.prefix": "samples",
-        "schema.history.internal.kafka.topic": "samples.mssqlhis",
+        "schema.history.internal.kafka.topic": "samples.mssql.his",
         "database.hostname": "macula-cloud-mssql",
         "database.password": "######",
         "table.include.list": "dbo.(.*)",

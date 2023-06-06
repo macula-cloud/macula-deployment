@@ -5,7 +5,7 @@
         "connection.uri": "mongodb://admin:macula2cloud@macula-cloud-mongo",
         "database": "debezium",
         "collection": "change_logs",
-        "topics.regex": "ipr.(.*)$",
+        "topics.regex": "samples.(.*)$",
         "mongo.errors.tolerance": "all",
         "mongo.errors.log.enable": "true",
         "errors.log.include.messages": "true",

@@ -13,6 +13,8 @@ services:
     ports:
       - 9092:9092
       - 9093:9093
+    volumes:
+      - ${KAFKA_HOME}/data:/bitnami/kafka/data
     environment:
       - KAFKA_ENABLE_KRAFT=yes
       - KAFKA_CFG_PROCESS_ROLES=broker,controller

@@ -5,7 +5,7 @@
         "debezium.inconsistent.schema.handling.mode": "warning",
         "topic.prefix": "samples",
         "database.user": "root",
-        "schema.history.internal.kafka.topic": "samples.his",
+        "schema.history.internal.kafka.topic": "samples.mysql.his",
         "database.server.id": "1",
         "database.hostname": "macula-cloud-mysql",
         "database.password": "#######",
