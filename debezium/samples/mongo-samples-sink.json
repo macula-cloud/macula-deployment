@@ -6,8 +6,11 @@
         "database": "debezium",
         "collection": "change_logs",
         "topics.regex": "ipr.(.*)$",
+        "mongo.errors.tolerance": "all",
+        "mongo.errors.log.enable": "true",
+        "errors.log.include.messages": "true",
         "key.converter": "org.apache.kafka.connect.storage.StringConverter",
-        "value.converter": "org.apache.kafka.connect.json.JsonConverter",
-        "value.converter.schemas.enable": "false"
+        "value.converter.schemas.enable": "false",
+        "value.converter": "org.apache.kafka.connect.json.JsonConverter"
     }
 }
