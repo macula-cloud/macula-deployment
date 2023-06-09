@@ -16,6 +16,8 @@ services:
     - ${DEBEZIUM_HOME}/java/java.security:/etc/java/java-11-openjdk/java-11-openjdk-11.0.18.0.10-1.fc37.x86_64/conf/security/java.security
     # Mongo Sink
     - ${DEBEZIUM_HOME}/kafka-connect-mongodb/lib:/kafka/connect/kafka-connect-mongodb
+    # Logs
+    - ${DEBEZIUM_HOME}/logs:/kafka/logs
     environment:
       - BOOTSTRAP_SERVERS=macula-cloud-kafka:9092
       - GROUP_ID=1

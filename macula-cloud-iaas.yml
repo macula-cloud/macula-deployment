@@ -6,6 +6,30 @@ networks:
     external: true
 
 services:
+  # Nginx
+  macula-cloud-nginx:
+    image: nginx:latest
+    container_name: macula-cloud-nginx
+    restart: always
+    ports:
+      - 80:80
+      - 8301:8301
+      - 8302:8302
+      - 8303:8303
+      - 8304:8304
+      - 8305:8305
+      - 8306:8306
+      - 8307:8307
+      - 8308:8308
+      - 8309:8309
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+      - ${NGINX_HOME}/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ${NGINX_HOME}/cert:/etc/nginx/cert
+      - ${NGINX_HOME}/html:/usr/share/nginx/html
+      - ${NGINX_HOME}/logs:/var/log/nginx
+
   # Redis
   macula-cloud-redis:
     image: redis:latest
