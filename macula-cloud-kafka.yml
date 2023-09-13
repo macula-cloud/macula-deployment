@@ -9,7 +9,7 @@ services:
   # Kafka https://hub.docker.com/r/bitnami/kafka
   macula-cloud-kafka:
     container_name: macula-cloud-kafka
-    image: bitnami/kafka:3.4.0-debian-11-r21
+    image: bitnami/kafka:3.5.1-debian-11-r46
     ports:
       - 9092:9092
       - 9093:9093
