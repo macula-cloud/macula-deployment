@@ -6,6 +6,36 @@ networks:
     external: true
 
 services:
+  # Kafka https://hub.docker.com/r/bitnami/kafka
+  macula-cloud-kafka:
+    container_name: macula-cloud-kafka
+    image: bitnami/kafka:3.5.1-debian-11-r46
+    ports:
+      - 9192:9092
+      - 9193:9093
+    volumes:
+      - ${KAFKA_HOME}/data:/bitnami/kafka/data
+    environment:
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://${KAFKA_IP}:9092
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@${KAFKA_IP}:9093
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_SOCKET_REQUEST_MAX_BYTES=419430400
+
+  macula-cloud-kafka-ui:
+    container_name: macula-cloud-kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 9180:8080
+    environment:
+    - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=macula-cloud-kafka:9192
+    
   macula-debezium-connect:
     container_name: macula-debezium-connect
     image: quay.io/debezium/connect:${DEBEZIUM_VERSION}
@@ -19,7 +49,7 @@ services:
     # Logs
     - ${DEBEZIUM_HOME}/logs:/kafka/logs
     environment:
-      - BOOTSTRAP_SERVERS=macula-cloud-kafka:9092
+      - BOOTSTRAP_SERVERS=macula-cloud-kafka:9192
       - GROUP_ID=1
       - CONFIG_STORAGE_TOPIC=debezium_connect_configs
       - OFFSET_STORAGE_TOPIC=debezium_connect_offsets
