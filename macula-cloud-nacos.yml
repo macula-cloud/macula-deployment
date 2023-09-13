@@ -9,7 +9,7 @@ services:
 
   # Nacos registry
   macula-cloud-nacos:
-    image: nacos/nacos-server:v2.2.1
+    image: nacos/nacos-server:v2.2.3
     container_name: macula-cloud-nacos
     restart: always
     ports:

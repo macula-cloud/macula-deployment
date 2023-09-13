@@ -20,4 +20,4 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PWD}
     volumes:
       - ${POSTGRES_HOME}/data:/var/lib/postgresql/data
-      - ${POSTGRES_HOME}/postgresql.conf:/var/lib/postgresql/data/postgresql.conf
+      - ${POSTGRES_HOME}/postgresql.conf:/var/lib/postgresql/postgresql.conf
