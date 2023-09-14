@@ -13,6 +13,10 @@
         "database.hostname": "macula-cloud-mssql",
         "database.password": "######",
         "table.include.list": "dbo.(.*)",
+        "snapshot.isolation.mode": "read_committed",
         "snapshot.mode": "schema_only"
     }
 }
+
+
+

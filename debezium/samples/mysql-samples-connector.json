@@ -10,6 +10,7 @@
         "database.hostname": "macula-cloud-mysql",
         "database.password": "#######",
         "schema.history.internal.kafka.bootstrap.servers": "macula-cloud-kafka:9092",
+        "snapshot.isolation.mode": "read_committed",
         "snapshot.mode": "schema_only",
         "provide.transaction.metadata": "true"
     }
