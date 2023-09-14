@@ -2,21 +2,18 @@
     "name": "mssql-samples-connector",
     "config": {
         "connector.class": "io.debezium.connector.sqlserver.SqlServerConnector",
-        "database.encrypt": "false",
-        "database.user": "sa",
-        "database.names": "dbname",
-        "schema.history.internal.kafka.bootstrap.servers": "macula-cloud-kafka:9092",
+        "database.hostname": "macula-cloud-mssql",
         "database.port": "1433",
+        "database.names": "dbname",
+        "database.user": "sa",
+        "database.password": "######",
+        "database.encrypt": "false",
+        "table.include.list": "dbo.(.*)",
         "provide.transaction.metadata": "true",
         "topic.prefix": "samples",
+        "schema.history.internal.kafka.bootstrap.servers": "macula-cloud-kafka:9092",
         "schema.history.internal.kafka.topic": "samples.mssql.his",
-        "database.hostname": "macula-cloud-mssql",
-        "database.password": "######",
-        "table.include.list": "dbo.(.*)",
         "snapshot.isolation.mode": "read_committed",
         "snapshot.mode": "schema_only"
     }
 }
-
-
-

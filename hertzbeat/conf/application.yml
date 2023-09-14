@@ -126,3 +126,7 @@ warehouse:
       host: ${REDIS_HOST}
       port: 6379
       password: ${REDIS_PWD}
+common:
+  queue:
+    # memory or kafka
+    type: memory

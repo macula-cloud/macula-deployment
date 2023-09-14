@@ -37,3 +37,4 @@ target/
 ### Data ###
 **/h2.mv.db
 **/meta.dat
+*Release.json

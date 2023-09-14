@@ -7,10 +7,12 @@ networks:
 
 services:
   macula-cloud-hertzbeat:
-    image: tancloud/hertzbeat
     container_name: macula-cloud-hertzbeat
+    image: tancloud/hertzbeat
     restart: always
     volumes:
+      - ${HERTZBEAT_HOME}/logs:/opt/hertzbeat/logs
+      - ${HERTZBEAT_HOME}/define/app-kafka-connect.yml:/opt/hertzbeat/define/app-kafka-connect.yml
       - ${HERTZBEAT_HOME}/conf/application.yml:/opt/hertzbeat/config/application.yml
       - ${HERTZBEAT_HOME}/conf/sureness.yml:/opt/hertzbeat/config/sureness.yml
     ports:

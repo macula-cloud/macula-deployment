@@ -3,9 +3,10 @@
 ### Introduction
 #### Running at work catalog
 ```
-git clone https://gitlab.com/macula-cloud/macula-deployment.git scmp
-cd scmp
+mkdir macula-deployment
 
-root sudo chmod -R 777 scmp
+root sudo chmod -R 777 macula-deployment
 
-docker-compose up -d --build
+git clone https://gitlab.com/macula-cloud/macula-deployment.git macula-deployment
+
+docker-compose -f macula-XXXX.yml up -d

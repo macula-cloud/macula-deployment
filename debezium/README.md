@@ -2,7 +2,7 @@
 ```
 http://{host}:{port}/
 ```
-命令：
+### 命令：
 ```
 GET /connectors – 返回所有正在运行的connector名。
 POST /connectors – 新建一个connector; 请求体必须是json格式并且需要包含name字段和config字段，name是connector的名字，config是json格式，必须包含你的connector的配置信息。
