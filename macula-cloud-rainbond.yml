@@ -1,0 +1,20 @@
+version: "3"
+
+networks:
+  default:
+    name: macula-cloud-network
+    external: true
+
+services:
+
+  # Rainbond 
+  macula-cloud-rainbond:
+    container_name: macula-cloud-rainbond
+    image: registry.cn-hangzhou.aliyuncs.com/goodrain/rainbond:v5.15.1-release-allinone
+    restart: always
+    ports:
+      - 7070:7070
+    environment:
+      - TZ=Asia/Shanghai
+    volumes:
+    - ${RAINBOND_HOME}/data:/app/data
