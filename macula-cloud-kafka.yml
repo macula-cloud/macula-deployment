@@ -10,6 +10,7 @@ services:
   macula-cloud-kafka:
     container_name: macula-cloud-kafka
     image: bitnami/kafka:3.5.1
+    restart: always
     ports:
       - 9092:9092
       - 9093:9093
@@ -36,6 +37,7 @@ services:
   macula-cloud-kafka-ui:
     container_name: macula-cloud-kafka-ui
     image: provectuslabs/kafka-ui:master
+    restart: always
     ports:
       - 9180:8080
     environment:

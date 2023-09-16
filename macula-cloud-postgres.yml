@@ -7,7 +7,7 @@ networks:
 
 services:
 
-  # Postgres
+  # Postgres https://hub.docker.com/_/postgres
   macula-cloud-postgres:
     image: postgres:${POSTGRES_VERSION}
     container_name: macula-cloud-postgres

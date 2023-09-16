@@ -7,9 +7,11 @@ networks:
 
 services:
 
+  # Debezium https://hub.docker.com/r/debezium/connect
   macula-debezium-connect:
     container_name: macula-debezium-connect
     image: debezium/connect:${DEBEZIUM_VERSION}
+    restart: always
     ports:
       - "18083:8083"
     volumes:
@@ -29,9 +31,11 @@ services:
       - ENABLE_DEBEZIUM_SCRIPTING=true
       - CONNECT_REST_EXTENSION_CLASSES=io.debezium.kcrestextension.DebeziumConnectRestExtension
 
+  # Debezium UI https://hub.docker.com/r/debezium/debezium-ui
   macula-debezium-ui:
     container_name: macula-debezium-ui
     image: debezium/debezium-ui:${DEBEZIUM_UI_VERSION}
+    restart: always    
     ports:
       - "8080:8080"
     environment:
