@@ -5,10 +5,11 @@
         "connection.url": "jdbc:mysql://macula-cloud-mysql:3306/debezium_replica?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&tinyInt1isBit=false&allowMultiQueries=true&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true&useAffectedRows=true",
         "connection.username": "root",
         "connection.password": "macula@^cloud$",
+        "connect.timeout.ms": "1800",
+        "hibernate.c3p0.idle_test_period": 30,
         "database.time_zone": "UTC",
         
         "tasks.max": "1",
-        "connect.timeout.ms": "1800",
         "request.timeout.ms": "300000",
 
         "insert.mode": "upsert",

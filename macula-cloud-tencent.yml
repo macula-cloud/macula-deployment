@@ -7,9 +7,9 @@ networks:
 
 services:
 
-  # Polaris registry
+  # Polaris https://hub.docker.com/r/polarismesh/polaris-standalone
   macula-cloud-polaris:
-    image: polarismesh/polaris-server-standalone:latest
+    image: polarismesh/polaris-standalone:latest
     container_name: macula-cloud-polaris
     restart: always
     ports:
