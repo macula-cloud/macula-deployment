@@ -6,20 +6,44 @@ networks:
     external: true
 
 services:
+  # Docker Dind（Required）
+  macula-docker-dind:
+    image: docker:dind
+    container_name: macula-docker-dind
+    privileged: true
+    hostname: macula-docker-dind
+    environment:
+      TZ: "Asia/Shanghai"
+      DOCKER_TLS_CERTDIR: "/certs"
+    volumes:
+      - ${JENKINS_HOME}/certs:/certs/client
+      - ${JENKINS_HOME}/data:/var/jenkins_home
+      - ${MAVEN_REPO}:/maven/.m2
+      - ${JENKINS_HOME}/maven/settings.xml:/maven/.m2/settings.xml
+    command: ["--registry-mirror=https://mirror.ccs.tencentyun.com"] 
+
 
   # Jenkins
   macula-cloud-jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: .
+      dockerfile: ${JENKINS_HOME}/docker/Dockerfile
     container_name: macula-cloud-jenkins
     restart: always
     privileged: true
-    user: root
     environment:
       TZ: "Asia/Shanghai"
+      DOCKER_TLS_VERIFY: 1
+      # 指向dind服务地址
+      DOCKER_HOST: "tcp://macula-docker-dind:2376"
+      DOCKER_CERT_PATH: "/certs/client"
     volumes:
       - ${JENKINS_HOME}/data:/var/jenkins_home
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${MAVEN_REPO}:/root/.m2
+      - ${JENKINS_HOME}/certs:/certs/client:ro
+      - ${MAVEN_REPO}:/maven/.m2
+      - ${JENKINS_HOME}/maven/settings.xml:/maven/.m2/settings.xml
     ports:
       - "8888:8080"
       - "51000:50000"
+    depends_on:
+      - macula-docker-dind
