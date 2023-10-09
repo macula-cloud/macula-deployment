@@ -1,10 +1,5 @@
 version: "3"
 
-networks:
-  default:
-    name: macula-cloud-network
-    external: true
-
 services:
   # Docker Dind（Required）
   macula-docker-dind:
@@ -21,7 +16,6 @@ services:
       - ${MAVEN_REPO}:/maven/.m2
       - ${JENKINS_HOME}/maven/settings.xml:/maven/.m2/settings.xml
     command: ["--registry-mirror=https://mirror.ccs.tencentyun.com"] 
-
 
   # Jenkins
   macula-cloud-jenkins:

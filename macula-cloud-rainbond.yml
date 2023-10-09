@@ -1,10 +1,5 @@
 version: "3"
 
-networks:
-  default:
-    name: macula-cloud-network
-    external: true
-
 services:
 
   # Rainbond 

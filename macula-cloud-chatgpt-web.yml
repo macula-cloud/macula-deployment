@@ -1,10 +1,5 @@
 version: "3"
 
-networks:
-  default:
-    name: macula-cloud-network
-    external: true
-
 services:
   app:
     image: chenzhaoyu94/chatgpt-web # 总是使用 latest ,更新时重新 pull 该 tag 镜像即可

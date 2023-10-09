@@ -1,10 +1,5 @@
 version: "3"
 
-networks:
-  default:
-    name: macula-cloud-network
-    external: true
-
 services:
   macula-cloud-mongo:
     container_name: macula-cloud-mongo
