@@ -3,7 +3,7 @@ version: "3"
 services:
   # elasticsearch
   macula-cloud-es:
-    image: elastic/elasticsearch:7.9.3
+    image: elastic/elasticsearch:8.10.4
     container_name: macula-cloud-es
     restart: always
     ports:
@@ -16,12 +16,14 @@ services:
       - http.cors.allow-origin="*"
       - bootstrap.memory_lock=true
       - ES_JAVA_OPTS=-Xms256m -Xmx512m
+      - xpack.security.enabled=false
     volumes:
       - ${ES_HOME}/data:/usr/share/elasticsearch/data
+      - ${ES_HOME}/plugins:/usr/share/elasticsearch/plugins
 
   # logstash
   macula-cloud-logstash:
-    image: elastic/logstash:7.9.3
+    image: elastic/logstash:8.10.4
     container_name: macula-cloud-logstash
     restart: always
     environment:
@@ -34,7 +36,7 @@ services:
 
   # kibana
   macula-cloud-kibana:
-    image: elastic/kibana:7.9.3
+    image: elastic/kibana:8.10.4
     container_name: macula-cloud-kibana
     restart: always
     ports:
