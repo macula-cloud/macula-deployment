@@ -1,38 +1,42 @@
 version: "3"
 
 services:
+
   # elasticsearch
-  macula-cloud-es:
+  macula-cloud-elasticsearch:
     image: elastic/elasticsearch:8.10.4
-    container_name: macula-cloud-es
+    container_name: macula-cloud-elasticsearch
     restart: always
     ports:
       - 9200:9200
+      - 9300:9300
     environment:
       - TZ=Asia/Shanghai
+      - LANG=en_US.UTF-8
       - node.name=es01
       - discovery.type=single-node
       - http.cors.enabled=true
       - http.cors.allow-origin="*"
       - bootstrap.memory_lock=true
-      - ES_JAVA_OPTS=-Xms256m -Xmx512m
       - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms256m -Xmx512m
     volumes:
       - ${ES_HOME}/data:/usr/share/elasticsearch/data
       - ${ES_HOME}/plugins:/usr/share/elasticsearch/plugins
+      # - ${ES_HOME}/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
 
-  # logstash
-  macula-cloud-logstash:
-    image: elastic/logstash:8.10.4
-    container_name: macula-cloud-logstash
+  # elastichq
+  macula-cloud-elasticsearch-hq:
+    image: elastichq/elasticsearch-hq
+    container_name: macula-cloud-elasticsearch-hq
     restart: always
+    ports:
+      - 5000:5000
     environment:
       - TZ=Asia/Shanghai
-      - LS_JAVA_OPTS=-Xms256m -Xmx512m
-      - monitoring.elasticsearch.hosts=http://macula-cloud-es:9200
-    volumes:
-      - ${LOGSTASH_HOME}/pipeline/:/usr/share/logstash/pipeline/
-    #  - ${LOGSTASH_HOME}/settings/:/usr/share/logstash/config/
+      - LANG=en_US.UTF-8
+      - HQ_DEFAULT_URL=http://macula-cloud-elasticsearch:9200
+      - HQ_ENABLE_SSL=false
 
   # kibana
   macula-cloud-kibana:
@@ -43,7 +47,8 @@ services:
       - 5601:5601
     environment:
       - TZ=Asia/Shanghai
+      - LANG=en_US.UTF-8
       - JAVA_OPTS=-Xms256m -Xmx512m
-      - elasticsearch.hosts=http://macula-cloud-es:9200
+      - elasticsearch.hosts=http://macula-cloud-elasticsearch:9200
     volumes:
       - ${KIBANA_HOME}/config/:/usr/share/kibana/config/
