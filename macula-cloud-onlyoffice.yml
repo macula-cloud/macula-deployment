@@ -14,8 +14,9 @@ services:
       - LANG=en_US.UTF-8
       - JWT_ENABLED=false
     volumes:
-      - ${ONLYOFFICE_HOME}/config/local.json:/etc/onlyoffice/documentserver/local.json
+      - ${ONLYOFFICE_HOME}/config/default.json:/etc/onlyoffice/documentserver/default.json
       - ${ONLYOFFICE_HOME}/logs:/var/log/onlyoffice
-      - ${ONLYOFFICE_HOME}/data:/var/www/onlyoffice/Data
-      - ${ONLYOFFICE_HOME}/lib:/var/lib/onlyoffice
-      - ${ONLYOFFICE_HOME}/db:/var/lib/postgresql
+      - ${ONLYOFFICE_HOME}/data/Data:/var/www/onlyoffice/Data
+      - ${ONLYOFFICE_HOME}/data/lib:/var/lib/onlyoffice
+      - ${ONLYOFFICE_HOME}/data/db:/var/lib/postgresql
+      - ${ONLYOFFICE_HOME}/fonts:/usr/share/fonts
