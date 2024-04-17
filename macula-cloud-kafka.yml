@@ -4,14 +4,13 @@ services:
   # Kafka https://hub.docker.com/r/bitnami/kafka
   macula-cloud-kafka:
     container_name: macula-cloud-kafka
-    image: bitnami/kafka:3.5.1
+    image: bitnami/kafka:3.6.2
     restart: always
     ports:
       - 9092:9092
       - 9093:9093
     volumes:
-      - ${KAFKA_HOME}/data:/bitnami/kafka/data
-      - ${KAFKA_HOME}/logs:/opt/bitnami/kafka/logs
+      - ${KAFKA_HOME}:/bitnami/kafka
     environment:
       # KRaft settings
       - KAFKA_ENABLE_KRAFT=yes

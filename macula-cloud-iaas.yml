@@ -29,7 +29,7 @@ services:
     volumes:
       - ${REDIS_HOME}/conf:/usr/local/etc/redis
       - ${REDIS_HOME}/data:/data
-    command: redis-server --appendonly yes
+    command: redis-server --appendonly yes --appendfsync always
 
   # Mysql
   macula-cloud-mysql:

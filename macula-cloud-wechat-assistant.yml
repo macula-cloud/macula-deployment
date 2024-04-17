@@ -1,0 +1,66 @@
+version: "3"
+
+services:
+
+  # wechat-assistant
+  macula-cloud-wechat-assistant:
+    image: aibotk/wechat-assistant:latest
+    container_name: macula-cloud-wechat-assistant
+    restart: always
+    ports:
+      - 9001:3000
+    environment:
+      - TZ=Asia/Shanghai
+      - LANG=en_US.UTF-8
+      - SQL_DSN=${MYSQL_USER}:${MYSQL_PWD}@tcp(macula-cloud-mysql:3306)/oneapi
+      - REDIS_CONN_STRING=redis://default:${REDIS_PWD}@macula-cloud-redis:6379
+    volumes:
+      - ${AI_HOME}/data/oneapi:/data
+
+  # pgvector
+  macula-cloud-pgvector:
+    image: ankane/pgvector:v0.5.0
+    container_name: macula-cloud-pgvector
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      # 这里的配置只有首次运行生效。修改后，重启镜像是不会生效的。需要把持久化数据删除再重启，才有效果
+      - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    volumes:
+      - ${AI_HOME}/data/pgvector:/var/lib/postgresql/data
+
+  # fastgpt
+  macula-cloud-fastgpt:
+    image: registry.cn-hangzhou.aliyuncs.com/fastgpt/fastgpt
+    container_name: macula-cloud-fastgpt
+    ports:
+      - 3000:3000
+    depends_on:
+      - macula-cloud-pgvector
+      - macula-cloud-oneapi
+    restart: always
+    environment:
+      # root 密码，用户名为: root。如果需要修改 root 密码，直接修改这个环境变量，并重启即可。
+      - DEFAULT_ROOT_PSW=1234
+      # AI模型的API地址哦。务必加 /v1。这里默认填写了OneApi的访问地址。
+      - OPENAI_BASE_URL=http://macula-cloud-oneapi:3000/v1
+      # AI模型的API Key。（这里默认填写了OneAPI的快速默认key，测试通后，务必及时修改）
+      - CHAT_API_KEY=sk-sgvyZza7KpC87Lv9483d835dDa8e4813Bd68949290Ed8cEd
+      # 数据库最大连接数
+      - DB_MAX_LINK=30
+      # 登录凭证密钥
+      - TOKEN_KEY=any
+      # root的密钥，常用于升级时候的初始化请求
+      - ROOT_KEY=root_key
+      # 文件阅读加密
+      - FILE_TOKEN_KEY=filetoken
+      # MongoDB 连接参数. 用户名myusername,密码mypassword。
+      - MONGODB_URI=mongodb://${MONGO_USER}:${MONGO_PWD}@macula-cloud-mongo:27017/fastgpt?authSource=admin
+      # pg 连接参数
+      - PG_URL=postgresql://username:password@macula-cloud-pgvector:5432/postgres
+    volumes:
+      - ${AI_HOME}/config/config.json:/app/data/config.json
+      - ${AI_HOME}/data/fastgpt:/app/tmp

@@ -3,15 +3,47 @@ version: "3"
 services:
   macula-cloud-mongo:
     container_name: macula-cloud-mongo
-    image: mongo
+    image: mongo:5.0.18
     restart: always
     ports:
       - 27017:27017
     volumes:
-      - ${MONGO_HOME}/data/db:/data/db
+     - ${MONGO_HOME}/data/db:/data/db
+    #  - ${MONGO_HOME}/config/mongodb.key:/data/db/mongodb.key
+    command: mongod --keyFile /data/mongodb.key --replSet rs0
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PWD}
+    entrypoint:
+      - bash
+      - -c
+      - |
+        openssl rand -base64 128 > /data/mongodb.key
+        chmod 400 /data/mongodb.key
+        chown 999:999 /data/mongodb.key
+        echo 'const isInited = rs.status().ok === 1
+        if(!isInited){
+          rs.initiate({
+              _id: "rs0",
+              members: [
+                  { _id: 0, host: "macula-cloud-mongo:27017" }
+              ]
+          })
+        }' > /data/initReplicaSet.js
+        # 启动MongoDB服务
+        exec docker-entrypoint.sh "$$@" &
+
+        # 等待MongoDB服务启动
+        until mongo -u admin -p macula2cloud --authenticationDatabase admin --eval "print('waited for connection')" > /dev/null 2>&1; do
+          echo "Waiting for MongoDB to start..."
+          sleep 2
+        done
+
+        # 执行初始化副本集的脚本
+        mongo -u admin -p macula2cloud --authenticationDatabase admin /data/initReplicaSet.js
+
+        # 等待docker-entrypoint.sh脚本执行的MongoDB服务进程
+        wait $$!
 
   macula-cloud-mongo-express:
     container_name: macula-cloud-mongo-express
@@ -24,4 +56,4 @@ services:
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME = ${MONGO_USER}
       - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_PWD}
-      - ME_CONFIG_MONGODB_URL= mongodb://${MONGO_USER}:${MONGO_PWD}@macula-cloud-mongo:27017/
+      - ME_CONFIG_MONGODB_URL= mongodb://${MONGO_USER}:${MONGO_PWD}@macula-cloud-mongo:27017/?useUnifiedTopology=true
