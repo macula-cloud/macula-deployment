@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>macula-cloud</groupId>
 	<artifactId>macula-mongo-kafka-connect</artifactId>
-	<version>1.11.0</version>
+	<version>1.11.2</version>
 
 	<dependencies>
 		<dependency>
