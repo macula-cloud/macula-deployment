@@ -5,18 +5,23 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>macula-cloud</groupId>
 	<artifactId>macula-mongo-kafka-connect</artifactId>
-	<version>1.11.2</version>
+	<version>1.0</version>
+
+	<properties>
+		<mongo-kafka-connect.version>1.11.2</mongo-kafka-connect.version>
+		<debezium-scripting.version>2.7.0.Alpha1</debezium-scripting.version>
+	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.mongodb.kafka</groupId>
 			<artifactId>mongo-kafka-connect</artifactId>
-			<version>${project.version}</version>
+			<version>${mongo-kafka-connect.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.debezium</groupId>
 			<artifactId>debezium-scripting</artifactId>
-			<version>2.3.3.Final</version>
+			<version>${debezium-scripting.version}</version>
 		</dependency>
 	</dependencies>
 
