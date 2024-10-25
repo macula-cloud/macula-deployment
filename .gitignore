@@ -2,6 +2,7 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 **/data/**
 **/logs/**
+**/storage/**
 
 ### STS ###
 .apt_generated

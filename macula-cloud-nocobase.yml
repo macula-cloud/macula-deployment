@@ -1,0 +1,52 @@
+version: "3"
+
+networks:
+  nocobase:
+    driver: bridge
+
+services:
+  macula-cloud-nocobase:
+    image: registry.cn-shanghai.aliyuncs.com/nocobase/nocobase:next
+    depends_on:
+      - macula-nocobase-postgres
+    environment:
+      # 应用的密钥，用于生成用户 token 等
+      # 如果 APP_KEY 修改了，旧的 token 也会随之失效
+      # 可以是任意随机字符串，并确保不对外泄露
+      - APP_KEY=E6ndMJ/SYaK4LsngcYk0QTgxqPWuva+oSL2Hw+WTxMdWpe6hhMmr4TZq2jzqwjo0F6oVkUeHFVtbRoaKvZwhPwZtzc5WvTWL89LddVBJ16NXFKTw/WoA9crvFC7p7AkyrUFTdXvhwauFNeti0UNp6nZiFfY8S+u8OUN8frdZe0SlhQp5krvFiivaCmHKu+9gCjH9ZU0sGd3evhtWABSn580o5gOdqF1AXIY0HpmNRD3mqK/71aNzhUbvCWfPuHrmTmIMtvAefEFTr+p0GTEs+xo5PiPPsnmCkQA8WhvbzPuqqO/HQqtUkNqENoDP1YsBCqPbVi37VdhQPxKnep490A==
+      # 数据库类型，支持 postgres, mysql, mariadb, sqlite
+      - DB_DIALECT=postgres
+      # 数据库主机，可以替换为已有的数据库服务器 IP
+      - DB_HOST=macula-nocobase-postgres
+      # 数据库名
+      - DB_DATABASE=${NOCOBASE_DB}
+      # 数据库用户
+      - DB_USER=${NOCOBASE_DB_USER}
+      # 数据库密码
+      - DB_PASSWORD=${NOCOBASE_DB_PWD}
+      # 时区
+      - TZ=Asia/Shanghai
+    volumes:
+      - ${NOCOBASE_HOME}/storage:/app/nocobase/storage
+    networks:
+      - nocobase
+    ports:
+      - "23000:80"
+    # init: true
+
+  # 如果使用已有数据库服务，可以不启动 postgres
+  macula-nocobase-postgres:
+    image: registry.cn-shanghai.aliyuncs.com/nocobase/postgres:16
+    restart: always
+    command: postgres -c wal_level=logical
+    environment:
+      - TZ=Asia/Shanghai
+      - POSTGRES_USER=${NOCOBASE_DB_USER}
+      - POSTGRES_PASSWORD=${NOCOBASE_DB_PWD}
+      - POSTGRES_DB=${NOCOBASE_DB}
+    volumes:
+      - ${NOCOBASE_HOME}/storage/db/postgres:/var/lib/postgresql/data
+    networks:
+      - nocobase
+    ports:
+      - "65432:5432"
