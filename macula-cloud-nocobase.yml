@@ -35,6 +35,12 @@ services:
     # init: true
 
   # 如果使用已有数据库服务，可以不启动 postgres
+  # 支持GIS需要执行：
+  # CREATE EXTENSION postgis;
+  # CREATE EXTENSION postgis_topology;
+  # CREATE EXTENSION fuzzystrmatch;
+  # CREATE EXTENSION postgis_tiger_geocoder;
+  # CREATE EXTENSION address_standardizer;
   macula-nocobase-postgres:
     image: postgis/postgis:16-3.5
     restart: always
