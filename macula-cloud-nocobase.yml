@@ -55,4 +55,4 @@ services:
     networks:
       - nocobase
     ports:
-      - "65432:5432"
+      - "5432:5432"
