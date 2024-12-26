@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   macula-cloud-hertzbeat:
     container_name: macula-cloud-hertzbeat

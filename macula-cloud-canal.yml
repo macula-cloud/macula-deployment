@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   # Canal Admin
   macula-cloud-canal-admin:

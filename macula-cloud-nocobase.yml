@@ -1,9 +1,7 @@
-version: "3"
 
 networks:
   nocobase:
     driver: bridge
-
 services:
   macula-cloud-nocobase:
     image: registry.cn-shanghai.aliyuncs.com/nocobase/nocobase:next

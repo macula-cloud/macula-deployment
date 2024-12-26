@@ -1,5 +1,3 @@
-version: "3"
-
 services:
  # Rocket MQ
   macula-cloud-rocketmq-server:

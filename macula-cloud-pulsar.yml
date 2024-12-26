@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   # Pulsar Zookeeper Cluster
   macula-cloud-pulsar-zookeeper1:

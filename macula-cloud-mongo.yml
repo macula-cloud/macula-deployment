@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   macula-cloud-mongo:
     container_name: macula-cloud-mongo
