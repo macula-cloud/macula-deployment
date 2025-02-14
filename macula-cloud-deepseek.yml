@@ -1,12 +1,12 @@
 services:
   macula-cloud-deepseek-r1-14b:
     image: ollama/ollama:latest
-    container_name: ollama
+    container_name: macula-cloud-deepseek
     ports:
       - "11501:11434"
     volumes:
       - ${DEEPSEEK_HOME}/ollama:/root/.ollama
-      - ${DEEPSEEK_HOME}/deepseek-r1-14b/entrypoint.sh:/root/.ollama/entrypoint.sh+wx
+      - ${DEEPSEEK_HOME}/deepseek-r1-14b/entrypoint.sh:/root/.ollama/entrypoint.sh
     restart: unless-stopped
     entrypoint: ["/usr/bin/bash", "/root/.ollama/entrypoint.sh"]
           
@@ -18,5 +18,5 @@ services:
     volumes:
       - ${DEEPSEEK_HOME}/open-webui:/app/backend/data
     environment:
-      - OLLAMA_BASE_URL=http://macula-cloud-deepseek-r1-8b:11434
+      - OLLAMA_BASE_URL=http://macula-cloud-deepseek:11434
     restart: unless-stopped
