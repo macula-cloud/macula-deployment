@@ -1,7 +1,7 @@
 services:
   macula-cloud-deepseek-r1-14b:
     image: ollama/ollama:latest
-    container_name: macula-cloud-deepseek
+    container_name: macula-cloud-deepseek-r1-14b
     ports:
       - "11501:11434"
     volumes:
