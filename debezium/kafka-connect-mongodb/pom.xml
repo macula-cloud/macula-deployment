@@ -8,8 +8,8 @@
 	<version>1.0</version>
 
 	<properties>
-		<mongo-kafka-connect.version>1.13.1</mongo-kafka-connect.version>
-		<debezium-scripting.version>3.0.0.Final</debezium-scripting.version>
+		<mongo-kafka-connect.version>1.15.0</mongo-kafka-connect.version>
+		<debezium-scripting.version>3.1.0.Alpha1</debezium-scripting.version>
 	</properties>
 
 	<dependencies>

@@ -3,6 +3,7 @@ target/
 **/data/**
 **/logs/**
 **/storage/**
+**/**.jar
 
 ### STS ###
 .apt_generated
