@@ -14,8 +14,8 @@ fi
 # Pause for Ollama to start.
 sleep 5
 
-echo "🔴 Retrieving deepseek-r1:14b model..."
-if ! ollama run deepseek-r1:14b; then
+echo "🔴 Retrieving $OLLAMA_MODEL model..."
+if ! ollama run $OLLAMA_MODEL; then
     echo "❌ Failed to retrieve the model."
     kill $pid
     exit 1
